@@ -27,7 +27,7 @@ const jsx = ['AuthLayout.jsx', 'LoginPage.jsx', 'RegisterPage.jsx', 'ResetPasswo
 const channels = [
   ['Web sitesi', null, 'web sitende'],
   ['Instagram', 'kanallar/instagram.svg', 'Instagram’da'],
-  ['Trendyol', 'kanallar/trendyol.png', 'Trendyol’da'],
+  ['Trendyol', 'kanallar/trendyol-wordmark.svg', 'Trendyol’da', null, true],
   ['WhatsApp', 'kanallar/whatsapp.svg', 'WhatsApp’ta'],
   ['Hepsiburada', 'kanallar/hepsiburada.png', 'Hepsiburada’da'],
   ['Ticimax', 'kanallar/ticimax.svg', 'Ticimax’ta'],
@@ -44,7 +44,7 @@ const channels = [
   ['idefix', 'kanallar/idefix.png', 'idefix’te'],
   ['WooCommerce', 'kanallar/woocommerce.svg', 'WooCommerce’ta'],
   ['Cube Soft', null, 'Cube Soft’ta', 'CS'],
-].map(([label, f, phrase, mark]) => (f ? { label, src: uri(f), phrase } : { label, phrase, ...(mark ? { mark } : {}) }));
+].map(([label, f, phrase, mark, wide]) => (f ? { label, src: uri(f), phrase, ...(wide ? { wide } : {}) } : { label, phrase, ...(mark ? { mark } : {}) }));
 
 // Belge pencereleri için metinler: app.ailways.com'daki dört sayfadan çıkarıldı (legal-preview.json)
 const legalRaw = JSON.parse(readFileSync(join(here, 'legal-preview.json'), 'utf8'));

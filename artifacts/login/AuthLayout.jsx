@@ -10,7 +10,7 @@
    Field / PasswordField: iki sayfanın ortak form alanları.
 
    channels: [{ label: 'Trendyol', src: trendyolUrl, phrase: 'Trendyol’da' }, { label: 'Web sitesi', phrase: 'web sitende' }, …]
-     src yoksa mark (ör. 'CS') harfleri, o da yoksa küre ikonu; phrase olan kanallar sırayla cümlede döner ve yörüngede vurgulanır. */
+     wide: true yazı logoları (ör. Trendyol) yuvarlakta geniş gösterilir; src yoksa mark (ör. 'CS') harfleri, o da yoksa küre ikonu; phrase olan kanallar sırayla cümlede döner ve yörüngede vurgulanır. */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import './Auth.css';
 
@@ -113,7 +113,7 @@ function ChannelOrbit({ channels, active, core }) {
           const p = orbitPos(i, channels.length);
           return (
             <span key={c.label} className={`alw-orbit-node${i === active ? ' is-active' : ''}`} style={{ left: `${p.x}%`, top: `${p.y}%` }} title={c.label}>
-              <span className="alw-orbit-face">{c.src ? <img src={c.src} alt="" /> : c.mark ? <b className="alw-orbit-mark">{c.mark}</b> : <GlobeIcon />}</span>
+              <span className="alw-orbit-face">{c.src ? <img className={c.wide ? 'is-wide' : undefined} src={c.src} alt="" /> : c.mark ? <b className="alw-orbit-mark">{c.mark}</b> : <GlobeIcon />}</span>
             </span>
           );
         })}

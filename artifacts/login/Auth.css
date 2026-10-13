@@ -235,6 +235,7 @@
   animation: alw-orbit 60s linear infinite reverse;
 }
 .alw-orbit-face img { width: 56%; height: 56%; object-fit: contain; border-radius: 6px; }
+.alw-orbit-face img.is-wide { width: 80%; height: 40%; border-radius: 0; }
 /* Logosu olmayan kanal: kısa harf işareti */
 .alw-orbit-mark { font-family: var(--alw-font-head); font-weight: 800; font-size: 3.4cqi; letter-spacing: -0.02em; color: var(--alw-navy); }
 @keyframes alw-orbit { to { transform: rotate(360deg); } }
