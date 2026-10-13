@@ -176,14 +176,24 @@
 .alw-otp-wrap { display: flex; flex-direction: column; gap: 6px; }
 .alw-otp-label { font-size: 12.5px; font-weight: 600; color: var(--alw-muted); }
 .alw-otp { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
-.alw-otp input {
-  width: 100%; height: 56px; padding: 0; border: 1px solid var(--alw-line); border-radius: 12px; background: #fff; outline: none;
-  text-align: center; font-family: var(--alw-font-head); font-size: 22px; font-weight: 700; color: var(--alw-fg); caret-color: var(--alw-accent);
-  transition: border-color .15s, box-shadow .15s, background .15s;
+/* Çerçeve = kutunun 2px'lik dolgusu; odakta bu dolgu dönen mavi bir ışığa (conic-gradient) dönüşür */
+@property --alw-ang { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.alw-otp-cell { display: block; padding: 2px; border-radius: 12px; background: var(--alw-line); transition: background .15s, box-shadow .15s; }
+.alw-otp-cell:hover { background: #C6D5E0; }
+.alw-otp-cell.is-filled { background: #B9DDF0; }
+.alw-otp-cell:focus-within {
+  background: conic-gradient(from var(--alw-ang), rgba(17, 157, 218, .18) 0deg, var(--alw-accent-2) 100deg, var(--alw-accent) 170deg, rgba(17, 157, 218, .18) 230deg, rgba(17, 157, 218, .18) 360deg);
+  box-shadow: 0 0 0 4px rgba(17, 157, 218, .1);
+  animation: alw-ang 1.6s linear infinite;
 }
-.alw-otp input:hover { border-color: #C6D5E0; }
-.alw-otp input:focus { border-color: var(--alw-accent-2); box-shadow: 0 0 0 4px rgba(17, 157, 218, .12); }
-.alw-otp input.is-filled { border-color: #B9DDF0; background: #F7FBFE; }
+@keyframes alw-ang { to { --alw-ang: 360deg; } }
+.alw-otp input {
+  display: block; width: 100%; height: 52px; padding: 0; border: 0; border-radius: 10px; background: #fff; outline: none;
+  text-align: center; font-family: var(--alw-font-head); font-size: 22px; font-weight: 700; color: var(--alw-fg); caret-color: var(--alw-accent);
+  transition: background .15s;
+}
+.alw-login .alw-otp input:focus-visible { outline: none; }
+.alw-otp-cell.is-filled input { background: #F7FBFE; }
 
 /* Giriş ↔ kayıt geçişi */
 .alw-switch { margin: 22px 0 0; text-align: center; font-size: 14px; color: var(--alw-muted); }
@@ -250,7 +260,7 @@
 @media (max-height: 900px) and (min-width: 861px) {
   .alw-form.is-register { margin-top: 20px; gap: 8px; }
   .alw-form.is-register .alw-box { height: 50px; }
-  .alw-otp input { height: 48px; font-size: 20px; }
+  .alw-otp input { height: 44px; font-size: 20px; }
   .alw-form.is-register .alw-box-main { gap: 2px; }
   .alw-form.is-register .alw-box-main input { font-size: 15px; }
   .alw-form.is-register ~ .alw-switch { margin-top: 14px; }
@@ -273,6 +283,7 @@
   .alw-rt-char.is-in, .alw-orbit-spin, .alw-orbit-face { animation: none; }
   .alw-orbit-link line { animation: none; stroke-dashoffset: 0; }
   .alw-orbit-node, .alw-core-logo { transition: none; }
+  .alw-otp-cell:focus-within { animation: none; background: var(--alw-accent-2); }
   .alw-login-form-side::before, .alw-login-form-side::after, .alw-btn::after, .alw-modal, .alw-modal-backdrop, .alw-reveal { animation: none; }
 }
 

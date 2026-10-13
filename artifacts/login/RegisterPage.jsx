@@ -58,20 +58,21 @@ function OtpInput({ id, label, length = 6, onChange }) {
       <span className="alw-otp-label" id={`${id}-label`}>{label}</span>
       <div className="alw-otp" role="group" aria-labelledby={`${id}-label`}>
         {digits.map((d, i) => (
-          <input
-            key={i}
-            ref={el => { refs.current[i] = el; }}
-            id={i === 0 ? id : undefined}
-            className={d ? 'is-filled' : ''}
-            type="text" inputMode="numeric" pattern="[0-9]*"
-            autoComplete={i === 0 ? 'one-time-code' : 'off'}
-            aria-label={`${i + 1}. hane`}
-            value={d}
-            onChange={e => onInput(i, e)}
-            onKeyDown={e => onKeyDown(i, e)}
-            onPaste={e => onPaste(i, e)}
-            onFocus={e => e.target.select()}
-          />
+          // Kutu çerçevesi: odaktaki kutuda etrafında mavi bir ışık döner
+          <span key={i} className={`alw-otp-cell${d ? ' is-filled' : ''}`}>
+            <input
+              ref={el => { refs.current[i] = el; }}
+              id={i === 0 ? id : undefined}
+              type="text" inputMode="numeric" pattern="[0-9]*"
+              autoComplete={i === 0 ? 'one-time-code' : 'off'}
+              aria-label={`${i + 1}. hane`}
+              value={d}
+              onChange={e => onInput(i, e)}
+              onKeyDown={e => onKeyDown(i, e)}
+              onPaste={e => onPaste(i, e)}
+              onFocus={e => e.target.select()}
+            />
+          </span>
         ))}
       </div>
     </div>
