@@ -22,13 +22,15 @@ const jsx = ['AuthLayout.jsx', 'LoginPage.jsx', 'RegisterPage.jsx', 'ResetPasswo
   .map(f => `/* ---- ${f} ---- */\n` + strip(readFileSync(join(here, f), 'utf8')))
   .join('\n');
 
-// Sol taraf: 16 kanal (pazar yerleri, sosyal medya ve e-ticaret altyapıları karışık sırada)
+// Sol taraf: 19 kanal (pazar yerleri, sosyal medya ve e-ticaret altyapıları karışık sırada)
+// Cube Soft'un logosu henüz yok: logo dosyası yerine 'CS' harfleri gösteriliyor
 const channels = [
   ['Web sitesi', null, 'web sitende'],
   ['Instagram', 'kanallar/instagram.svg', 'Instagram’da'],
   ['Trendyol', 'kanallar/trendyol.png', 'Trendyol’da'],
   ['WhatsApp', 'kanallar/whatsapp.svg', 'WhatsApp’ta'],
   ['Hepsiburada', 'kanallar/hepsiburada.png', 'Hepsiburada’da'],
+  ['Ticimax', 'kanallar/ticimax.svg', 'Ticimax’ta'],
   ['Telegram', 'kanallar/telegram.svg', 'Telegram’da'],
   ['n11', 'kanallar/n11.png', 'n11’de'],
   ['Shopify', 'kanallar/shopify.svg', 'Shopify’da'],
@@ -37,10 +39,12 @@ const channels = [
   ['TikTok', 'kanallar/tiktok.svg', 'TikTok’ta'],
   ['ikas', 'kanallar/ikas.png', 'ikas’ta'],
   ['Pazarama', 'kanallar/pazarama.png', 'Pazarama’da'],
+  ['IdeaSoft', 'kanallar/ideasoft.png', 'IdeaSoft’ta'],
   ['eBay', 'kanallar/ebay.svg', 'eBay’de'],
   ['idefix', 'kanallar/idefix.png', 'idefix’te'],
   ['WooCommerce', 'kanallar/woocommerce.svg', 'WooCommerce’ta'],
-].map(([label, f, phrase]) => (f ? { label, src: uri(f), phrase } : { label, phrase }));
+  ['Cube Soft', null, 'Cube Soft’ta', 'CS'],
+].map(([label, f, phrase, mark]) => (f ? { label, src: uri(f), phrase } : { label, phrase, ...(mark ? { mark } : {}) }));
 
 // Belge pencereleri için metinler: app.ailways.com'daki dört sayfadan çıkarıldı (legal-preview.json)
 const legalRaw = JSON.parse(readFileSync(join(here, 'legal-preview.json'), 'utf8'));

@@ -10,7 +10,7 @@
    Field / PasswordField: iki sayfanın ortak form alanları.
 
    channels: [{ label: 'Trendyol', src: trendyolUrl, phrase: 'Trendyol’da' }, { label: 'Web sitesi', phrase: 'web sitende' }, …]
-     src yoksa küre ikonu; phrase olan kanallar sırayla cümlede döner ve yörüngede vurgulanır. */
+     src yoksa mark (ör. 'CS') harfleri, o da yoksa küre ikonu; phrase olan kanallar sırayla cümlede döner ve yörüngede vurgulanır. */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import './Auth.css';
 
@@ -93,7 +93,7 @@ const orbitPos = (i, n) => {
   return { x: 50 + 38 * Math.cos(a), y: 50 + 38 * Math.sin(a) };
 };
 // Kanal sayısı arttıkça düğümler küçülür, birbirine değmez
-const nodeSize = n => `${Math.min(13.5, 165 / Math.max(n, 1))}%`;
+const nodeSize = n => `${Math.min(13.5, 180 / Math.max(n, 1))}%`;
 
 /* Ana sayfadaki kanal yörüngesi; framer-motion yerine saf CSS dönüşü.
    active: cümlede adı geçen kanal; büyür, mavi halka alır ve merkeze ince bir çizgiyle bağlanır. */
@@ -113,7 +113,7 @@ function ChannelOrbit({ channels, active, core }) {
           const p = orbitPos(i, channels.length);
           return (
             <span key={c.label} className={`alw-orbit-node${i === active ? ' is-active' : ''}`} style={{ left: `${p.x}%`, top: `${p.y}%` }} title={c.label}>
-              <span className="alw-orbit-face">{c.src ? <img src={c.src} alt="" /> : <GlobeIcon />}</span>
+              <span className="alw-orbit-face">{c.src ? <img src={c.src} alt="" /> : c.mark ? <b className="alw-orbit-mark">{c.mark}</b> : <GlobeIcon />}</span>
             </span>
           );
         })}
