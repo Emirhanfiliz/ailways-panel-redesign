@@ -20,6 +20,64 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import AuthLayout, { EMAIL_EXAMPLES, Field, PasswordField, useReducedMotion, useTypedPlaceholder } from './AuthLayout';
 
+/* 6 haneli doğrulama kodu: her hane ayrı kutu. Yazınca sonrakine geçer, Backspace bir öncekine döner,
+   oklarla gezilir, yapıştırılan kod kutulara dağıtılır. onChange birleşik kodu verir. */
+function OtpInput({ id, label, length = 6, onChange }) {
+  const [digits, setDigits] = useState(() => Array(length).fill(''));
+  const refs = useRef([]);
+  const focus = i => refs.current[Math.max(0, Math.min(length - 1, i))]?.focus();
+  const update = next => { setDigits(next); onChange?.(next.join('')); };
+  const fillFrom = (i, str) => {
+    const chars = str.replace(/\D/g, '').slice(0, length - i).split('');
+    if (!chars.length) return;
+    const next = digits.slice();
+    chars.forEach((ch, k) => { next[i + k] = ch; });
+    update(next);
+    focus(i + chars.length);
+  };
+  const onInput = (i, e) => {
+    const v = e.target.value.replace(/\D/g, '');
+    if (!v) { const next = digits.slice(); next[i] = ''; update(next); return; }
+    // Tek hane yazıldıysa eski haneyi atıp yenisini al; daha uzunsa (otomatik doldurma) kutulara dağıt
+    if (v.length > 2) { fillFrom(i, v); return; }
+    fillFrom(i, v.length === 2 ? (v.slice(-1) === digits[i] ? v.slice(0, -1) : v.slice(-1)) : v);
+  };
+  const onKeyDown = (i, e) => {
+    if (e.key === 'Backspace' && !digits[i] && i > 0) {
+      e.preventDefault();
+      const next = digits.slice(); next[i - 1] = ''; update(next); focus(i - 1);
+    } else if (e.key === 'ArrowLeft') { e.preventDefault(); focus(i - 1); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); focus(i + 1); }
+  };
+  const onPaste = (i, e) => {
+    e.preventDefault();
+    fillFrom(i, e.clipboardData.getData('text'));
+  };
+  return (
+    <div className="alw-otp-wrap">
+      <span className="alw-otp-label" id={`${id}-label`}>{label}</span>
+      <div className="alw-otp" role="group" aria-labelledby={`${id}-label`}>
+        {digits.map((d, i) => (
+          <input
+            key={i}
+            ref={el => { refs.current[i] = el; }}
+            id={i === 0 ? id : undefined}
+            className={d ? 'is-filled' : ''}
+            type="text" inputMode="numeric" pattern="[0-9]*"
+            autoComplete={i === 0 ? 'one-time-code' : 'off'}
+            aria-label={`${i + 1}. hane`}
+            value={d}
+            onChange={e => onInput(i, e)}
+            onKeyDown={e => onKeyDown(i, e)}
+            onPaste={e => onPaste(i, e)}
+            onFocus={e => e.target.select()}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const REGISTER_LEDE = { lead: 'Hesabını aç,', before: 'asistanın', after: 'müşterilerini karşılasın.' };
 
 // Belgeler: pencere başlığı ve "Sayfada aç" adresi. content (JSX) ya da blocks ([['h2'|'p'|'li'|'tr', metin], …]) ile metin verilir.
@@ -137,9 +195,7 @@ export default function RegisterPage({
 
         {codeSent && (
           <div className="alw-reveal">
-            <Field id="alw-code" label="Doğrulama kodu" icon="key">
-              <input id="alw-code" type="text" autoComplete="one-time-code" inputMode="numeric" maxLength={6} placeholder="Telefonuna gelen 6 haneli kod" required value={f.code} onChange={set('code')} />
-            </Field>
+            <OtpInput id="alw-code" label="Telefonuna gelen 6 haneli kod" onChange={code => setF(v => ({ ...v, code }))} />
           </div>
         )}
 

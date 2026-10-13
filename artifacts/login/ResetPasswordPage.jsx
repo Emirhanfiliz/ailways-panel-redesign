@@ -18,7 +18,7 @@
 import { useState } from 'react';
 import AuthLayout, { EMAIL_EXAMPLES, Field, useReducedMotion, useTypedPlaceholder } from './AuthLayout';
 
-const RESET_LEDE = { before: 'Asistanın', after: 'sen yokken de çalışıyor.' };
+const RESET_LEDE = { before: 'Asistanın', after: 'sen olmayınca da çalışıyor.' };
 
 const ArrowIcon = ({ back }) => (
   <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

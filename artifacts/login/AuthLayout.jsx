@@ -1,6 +1,6 @@
 /* Ailways · Giriş ve kayıt sayfalarının ortak iskeleti
    Yalnızca React'a bağlı; stiller Auth.css içinde, hepsi .alw-login altında (projedeki diğer stillere taşmaz).
-   Fontlar: projede Manrope (600–800) ve IBM Plex Sans (400–600) yüklü olmalı.
+   Fontlar: projede Manrope (600–800), IBM Plex Sans (400–600) ve logo yazısı için Outfit (300) yüklü olmalı.
 
    Sol: "Asistanın [kanal] müşterilerine cevap veriyor." + kanal yörüngesi. Cümlede adı geçen kanal yörüngede büyür,
         merkeze çizgiyle bağlanır; merkezde Ailways logosu ile "Yapay zeka, gerçek satış" sırayla yer değiştirir.
@@ -93,7 +93,7 @@ const orbitPos = (i, n) => {
   return { x: 50 + 38 * Math.cos(a), y: 50 + 38 * Math.sin(a) };
 };
 // Kanal sayısı arttıkça düğümler küçülür, birbirine değmez
-const nodeSize = n => `${Math.min(13.5, 150 / Math.max(n, 1))}%`;
+const nodeSize = n => `${Math.min(13.5, 165 / Math.max(n, 1))}%`;
 
 /* Ana sayfadaki kanal yörüngesi; framer-motion yerine saf CSS dönüşü.
    active: cümlede adı geçen kanal; büyür, mavi halka alır ve merkeze ince bir çizgiyle bağlanır. */

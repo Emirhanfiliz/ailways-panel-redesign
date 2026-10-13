@@ -22,7 +22,7 @@ const jsx = ['AuthLayout.jsx', 'LoginPage.jsx', 'RegisterPage.jsx', 'ResetPasswo
   .map(f => `/* ---- ${f} ---- */\n` + strip(readFileSync(join(here, f), 'utf8')))
   .join('\n');
 
-// Sol taraf: 2. sürümdeki 13 kanal
+// Sol taraf: 16 kanal (pazar yerleri, sosyal medya ve e-ticaret altyapıları karışık sırada)
 const channels = [
   ['Web sitesi', null, 'web sitende'],
   ['Instagram', 'kanallar/instagram.svg', 'Instagram’da'],
@@ -31,12 +31,15 @@ const channels = [
   ['Hepsiburada', 'kanallar/hepsiburada.png', 'Hepsiburada’da'],
   ['Telegram', 'kanallar/telegram.svg', 'Telegram’da'],
   ['n11', 'kanallar/n11.png', 'n11’de'],
+  ['Shopify', 'kanallar/shopify.svg', 'Shopify’da'],
   ['Messenger', 'kanallar/messenger.svg', 'Messenger’da'],
   ['Çiçeksepeti', 'kanallar/ciceksepeti.png', 'Çiçeksepeti’nde'],
   ['TikTok', 'kanallar/tiktok.svg', 'TikTok’ta'],
+  ['ikas', 'kanallar/ikas.png', 'ikas’ta'],
   ['Pazarama', 'kanallar/pazarama.png', 'Pazarama’da'],
   ['eBay', 'kanallar/ebay.svg', 'eBay’de'],
   ['idefix', 'kanallar/idefix.png', 'idefix’te'],
+  ['WooCommerce', 'kanallar/woocommerce.svg', 'WooCommerce’ta'],
 ].map(([label, f, phrase]) => (f ? { label, src: uri(f), phrase } : { label, phrase }));
 
 // Belge pencereleri için metinler: app.ailways.com'daki dört sayfadan çıkarıldı (legal-preview.json)
@@ -52,7 +55,7 @@ const html = `<title>Ailways Giriş</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap&subset=latin-ext" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=Outfit:wght@300&display=swap&subset=latin-ext" rel="stylesheet">
 <style>
 body { margin: 0; background: #fff; }
 ${css}
@@ -85,6 +88,7 @@ function Preview() {
   // Yalnızca önizleme: #register-doc adresi açılışta ilk belge penceresini açar
   useEffect(() => {
     if (location.hash === '#reset-sent') setSt('sent');
+    if (location.hash === '#register-otp') setTimeout(() => document.querySelector('.alw-box-btn:not(.is-icon)')?.click(), 300);
     if (location.hash === '#register-doc') setTimeout(() => document.querySelector('.alw-doclink')?.click(), 300);
   }, []);
   const common = { logo: LOGO, channels: CHANNELS, loading: st === 'loading', onSubmit: () => setSt('loading') };

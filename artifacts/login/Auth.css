@@ -58,7 +58,8 @@
 .alw-form-wrap { align-self: center; width: 100%; max-width: 420px; margin: 16px 0; }
 
 /* Sayfa başlığı yerine büyük logo + Ailways */
-.alw-brand { display: flex; align-items: center; gap: 14px; margin: 0; font-family: var(--alw-font-head); font-weight: 700; font-size: 40px; line-height: 1; letter-spacing: -0.02em; color: var(--alw-fg); }
+/* Logo yazısı: logodaki ince geometrik yazı tipi (Outfit 300); form alanlarının ortasına hizalı */
+.alw-brand { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 0; font-family: "Outfit", "Century Gothic", var(--alw-font-head); font-weight: 300; font-size: 44px; line-height: 1; letter-spacing: 0; color: var(--alw-fg); }
 .alw-brand img { width: 52px; height: 52px; border-radius: 14px; display: block; }
 
 .alw-alert { margin: 24px 0 0; padding: 11px 14px; border-radius: 10px; background: var(--alw-crit-soft); color: #9E2A23; font-size: 14px; }
@@ -171,6 +172,19 @@
 .alw-sent-btn { margin-top: 22px; }
 .alw-back { display: inline-flex; align-items: center; gap: 6px; }
 
+/* 6 haneli kod kutuları */
+.alw-otp-wrap { display: flex; flex-direction: column; gap: 6px; }
+.alw-otp-label { font-size: 12.5px; font-weight: 600; color: var(--alw-muted); }
+.alw-otp { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.alw-otp input {
+  width: 100%; height: 56px; padding: 0; border: 1px solid var(--alw-line); border-radius: 12px; background: #fff; outline: none;
+  text-align: center; font-family: var(--alw-font-head); font-size: 22px; font-weight: 700; color: var(--alw-fg); caret-color: var(--alw-accent);
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.alw-otp input:hover { border-color: #C6D5E0; }
+.alw-otp input:focus { border-color: var(--alw-accent-2); box-shadow: 0 0 0 4px rgba(17, 157, 218, .12); }
+.alw-otp input.is-filled { border-color: #B9DDF0; background: #F7FBFE; }
+
 /* Giriş ↔ kayıt geçişi */
 .alw-switch { margin: 22px 0 0; text-align: center; font-size: 14px; color: var(--alw-muted); }
 .alw-switch .alw-link { font-size: 14px; font-weight: 600; }
@@ -236,6 +250,7 @@
 @media (max-height: 900px) and (min-width: 861px) {
   .alw-form.is-register { margin-top: 20px; gap: 8px; }
   .alw-form.is-register .alw-box { height: 50px; }
+  .alw-otp input { height: 48px; font-size: 20px; }
   .alw-form.is-register .alw-box-main { gap: 2px; }
   .alw-form.is-register .alw-box-main input { font-size: 15px; }
   .alw-form.is-register ~ .alw-switch { margin-top: 14px; }
@@ -244,7 +259,7 @@
 
 /* Alçak ekran (ör. 1366×640): form sıkışır, sayfa yine kaydırmasız sığar */
 @media (max-height: 760px) and (min-width: 861px) {
-  .alw-brand { font-size: 34px; }
+  .alw-brand { font-size: 38px; }
   .alw-brand img { width: 44px; height: 44px; border-radius: 12px; }
   .alw-form { margin-top: 24px; gap: 12px; }
   .alw-box { height: 54px; }
@@ -269,6 +284,6 @@
   .alw-login { grid-template-columns: 1fr; }
   .alw-login-hero { display: none; }
   .alw-login-form-side { padding: 20px 16px; }
-  .alw-brand { font-size: 32px; }
+  .alw-brand { font-size: 36px; }
   .alw-brand img { width: 42px; height: 42px; border-radius: 11px; }
 }
