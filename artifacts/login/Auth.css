@@ -118,7 +118,7 @@
 @keyframes alw-spin { to { transform: rotate(360deg); } }
 
 /* ---------- Kayıt formu ---------- */
-.alw-form.is-register { margin-top: 28px; gap: 10px; }
+.alw-form.is-register { margin-top: 40px; gap: 10px; }
 .alw-form.is-register .alw-box { height: 56px; }
 .alw-reveal { animation: alw-reveal .35s cubic-bezier(.2, .9, .3, 1.1) both; }
 @keyframes alw-reveal { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
@@ -261,7 +261,7 @@
 /* Alçak ekran (ör. 1366×640): form sıkışır, sayfa yine kaydırmasız sığar */
 /* Kayıt formu uzun: ekran yeterince yüksek değilse alanlar incelir */
 @media (max-height: 900px) and (min-width: 861px) {
-  .alw-form.is-register { margin-top: 20px; gap: 8px; }
+  .alw-form.is-register { margin-top: 32px; gap: 8px; }
   .alw-form.is-register .alw-box { height: 50px; }
   .alw-otp input { height: 44px; font-size: 20px; }
   .alw-form.is-register .alw-box-main { gap: 2px; }

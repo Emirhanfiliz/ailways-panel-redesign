@@ -125,7 +125,7 @@ body { margin: 0; background: #fff; }
 @keyframes alw-spin { to { transform: rotate(360deg); } }
 
 /* ---------- Kayıt formu ---------- */
-.alw-form.is-register { margin-top: 28px; gap: 10px; }
+.alw-form.is-register { margin-top: 40px; gap: 10px; }
 .alw-form.is-register .alw-box { height: 56px; }
 .alw-reveal { animation: alw-reveal .35s cubic-bezier(.2, .9, .3, 1.1) both; }
 @keyframes alw-reveal { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
@@ -268,7 +268,7 @@ body { margin: 0; background: #fff; }
 /* Alçak ekran (ör. 1366×640): form sıkışır, sayfa yine kaydırmasız sığar */
 /* Kayıt formu uzun: ekran yeterince yüksek değilse alanlar incelir */
 @media (max-height: 900px) and (min-width: 861px) {
-  .alw-form.is-register { margin-top: 20px; gap: 8px; }
+  .alw-form.is-register { margin-top: 32px; gap: 8px; }
   .alw-form.is-register .alw-box { height: 50px; }
   .alw-otp input { height: 44px; font-size: 20px; }
   .alw-form.is-register .alw-box-main { gap: 2px; }
@@ -861,18 +861,18 @@ function RegisterPage({
         <PasswordField id="alw-password-2" label="Şifre tekrar" autoComplete="new-password" value={f.passwordAgain} onChange={set('passwordAgain')} />
 
         <div className="alw-consents">
+          {/* Kısa metin: tam metinler belge adına tıklayınca pencerede açılır. Açık rıza ayrı kutu olarak kalmalı (KVKK). */}
           <label className="alw-consent">
             <input type="checkbox" checked={f.consentTerms} onChange={set('consentTerms')} />
             <span>
-              <Doc k="kvkk" onOpen={setOpenDoc}>KVKK Aydınlatma Metni</Doc>’ni okudum, <Doc k="privacy" onOpen={setOpenDoc}>Gizlilik Politikası</Doc>’nı ve{' '}
+              <Doc k="kvkk" onOpen={setOpenDoc}>KVKK Aydınlatma Metni</Doc>’ni okudum; <Doc k="privacy" onOpen={setOpenDoc}>Gizlilik</Doc> ve{' '}
               <Doc k="cookies" onOpen={setOpenDoc}>Çerez Politikası</Doc>’nı kabul ediyorum.
             </span>
           </label>
           <label className="alw-consent">
             <input type="checkbox" checked={f.consentTransfer} onChange={set('consentTransfer')} />
             <span>
-              Kişisel verilerimin <Doc k="transfer" onOpen={setOpenDoc}>Yurt Dışına Veri Aktarımı Bilgilendirmesi</Doc>’nde belirtilen
-              yurt dışındaki hizmet sağlayıcılara aktarılmasına açık rızam ile onay veriyorum.
+              Verilerimin <Doc k="transfer" onOpen={setOpenDoc}>yurt dışına aktarılmasına</Doc> açık rıza veriyorum.
             </span>
           </label>
         </div>

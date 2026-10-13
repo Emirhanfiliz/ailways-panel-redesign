@@ -204,18 +204,18 @@ export default function RegisterPage({
         <PasswordField id="alw-password-2" label="Şifre tekrar" autoComplete="new-password" value={f.passwordAgain} onChange={set('passwordAgain')} />
 
         <div className="alw-consents">
+          {/* Kısa metin: tam metinler belge adına tıklayınca pencerede açılır. Açık rıza ayrı kutu olarak kalmalı (KVKK). */}
           <label className="alw-consent">
             <input type="checkbox" checked={f.consentTerms} onChange={set('consentTerms')} />
             <span>
-              <Doc k="kvkk" onOpen={setOpenDoc}>KVKK Aydınlatma Metni</Doc>’ni okudum, <Doc k="privacy" onOpen={setOpenDoc}>Gizlilik Politikası</Doc>’nı ve{' '}
+              <Doc k="kvkk" onOpen={setOpenDoc}>KVKK Aydınlatma Metni</Doc>’ni okudum; <Doc k="privacy" onOpen={setOpenDoc}>Gizlilik</Doc> ve{' '}
               <Doc k="cookies" onOpen={setOpenDoc}>Çerez Politikası</Doc>’nı kabul ediyorum.
             </span>
           </label>
           <label className="alw-consent">
             <input type="checkbox" checked={f.consentTransfer} onChange={set('consentTransfer')} />
             <span>
-              Kişisel verilerimin <Doc k="transfer" onOpen={setOpenDoc}>Yurt Dışına Veri Aktarımı Bilgilendirmesi</Doc>’nde belirtilen
-              yurt dışındaki hizmet sağlayıcılara aktarılmasına açık rızam ile onay veriyorum.
+              Verilerimin <Doc k="transfer" onOpen={setOpenDoc}>yurt dışına aktarılmasına</Doc> açık rıza veriyorum.
             </span>
           </label>
         </div>
