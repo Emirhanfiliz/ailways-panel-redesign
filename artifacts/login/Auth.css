@@ -218,11 +218,11 @@
 /* Üç satırlı cümlede yörünge biraz küçülür, alçak ekranda da sığar */
 .alw-hero-inner.has-lead .alw-orbit { width: min(100%, 480px, calc(100vh - 275px)); width: min(100%, 480px, calc(100dvh - 275px)); }
 .alw-orbit::before { content: ""; position: absolute; inset: 9%; border-radius: 50%; background: radial-gradient(circle, #EEF7FC 0%, #F6FBFE 55%, rgba(255, 255, 255, 0) 72%); }
-.alw-orbit-ring { position: absolute; inset: 12%; border-radius: 50%; border: 1px dashed #CFE3EE; }
+.alw-orbit-ring { position: absolute; inset: 9%; border-radius: 50%; border: 1px dashed #CFE3EE; }
 .alw-orbit-ring.is-inner { inset: 26.5%; border: 1px solid #EAF2F7; }
 .alw-orbit-spin { position: absolute; inset: 0; animation: alw-orbit 60s linear infinite; }
 .alw-orbit-node { position: absolute; z-index: 1; width: var(--alw-node, 13.5%); aspect-ratio: 1; transform: translate(-50%, -50%); transition: transform .45s cubic-bezier(.2, .9, .3, 1.2); }
-.alw-orbit-node.is-active { z-index: 2; transform: translate(-50%, -50%) scale(1.22); }
+.alw-orbit-node.is-active { z-index: 2; transform: translate(-50%, -50%) scale(1.18); }
 .alw-orbit-node .alw-orbit-face { transition: box-shadow .35s; }
 .alw-orbit-node.is-active .alw-orbit-face { box-shadow: 0 0 0 2px var(--alw-accent-2), 0 0 0 7px rgba(17, 157, 218, .14), 0 10px 24px rgba(10, 135, 197, .22); }
 /* Merkezden etkin kanala çizilen ince çizgi; her kanal değişiminde baştan çizilir */

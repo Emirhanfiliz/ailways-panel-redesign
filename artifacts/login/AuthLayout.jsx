@@ -90,10 +90,10 @@ const GlobeIcon = () => (
 
 const orbitPos = (i, n) => {
   const a = (i / n) * 2 * Math.PI - Math.PI / 2;
-  return { x: 50 + 38 * Math.cos(a), y: 50 + 38 * Math.sin(a) };
+  return { x: 50 + 41 * Math.cos(a), y: 50 + 41 * Math.sin(a) };
 };
 // Kanal sayısı arttıkça düğümler küçülür, birbirine değmez
-const nodeSize = n => `${Math.min(13.5, 180 / Math.max(n, 1))}%`;
+const nodeSize = n => `${Math.min(13.5, 210 / Math.max(n, 1))}%`;
 
 /* Ana sayfadaki kanal yörüngesi; framer-motion yerine saf CSS dönüşü.
    active: cümlede adı geçen kanal; büyür, mavi halka alır ve merkeze ince bir çizgiyle bağlanır. */
