@@ -23,7 +23,6 @@ const jsx = ['AuthLayout.jsx', 'LoginPage.jsx', 'RegisterPage.jsx', 'ResetPasswo
   .join('\n');
 
 // Sol taraf: 19 kanal (pazar yerleri, sosyal medya ve e-ticaret altyapıları karışık sırada)
-// Cube Soft'un logosu henüz yok: logo dosyası yerine 'CS' harfleri gösteriliyor
 const channels = [
   ['Web sitesi', null, 'web sitende'],
   ['Instagram', 'kanallar/instagram.svg', 'Instagram’da'],
@@ -43,7 +42,7 @@ const channels = [
   ['eBay', 'kanallar/ebay.svg', 'eBay’de'],
   ['idefix', 'kanallar/idefix.png', 'idefix’te'],
   ['WooCommerce', 'kanallar/woocommerce.svg', 'WooCommerce’ta'],
-  ['Cube Soft', null, 'Cube Soft’ta', 'CS'],
+  ['Cube Soft', 'kanallar/cubesoft-icon.png', 'Cube Soft’ta'],
 ].map(([label, f, phrase, mark, wide]) => (f ? { label, src: uri(f), phrase, ...(wide ? { wide } : {}) } : { label, phrase, ...(mark ? { mark } : {}) }));
 
 // Belge pencereleri için metinler: app.ailways.com'daki dört sayfadan çıkarıldı (legal-preview.json)

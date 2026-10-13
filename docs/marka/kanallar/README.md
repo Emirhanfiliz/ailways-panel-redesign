@@ -7,6 +7,8 @@ Ana sayfada ve kanal ekranlarında kullanılmak üzere toplandı (2026-10-05). A
 | instagram, whatsapp, telegram, messenger, tiktok, woocommerce, shopify, googleplay, appstore, googleanalytics (.svg) | Iconify `logos` seti (renkli) |
 | ebay.svg | Wikimedia Commons |
 | trendyol.png | trendyol.com apple-touch-icon |
+| cubesoft.png | Kullanıcı ekledi (2026-10-13); şeffaf zemin, yazı beyaz |
+| cubesoft-icon.png | cubesoft.png'den kırpılan renkli küp simgesi, 256×256 |
 | trendyol-wordmark.svg | trendyol.com üst menüdeki yazı logosu (SVG), Trendyol turuncusuna (#F27A1A) boyandı (2026-10-13) |
 | idefix.png | idefix.com app icon |
 | qpien.png | qpien.com apple-touch-icon |
