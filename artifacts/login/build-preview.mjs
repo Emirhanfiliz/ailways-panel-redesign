@@ -22,7 +22,7 @@ const jsx = ['AuthLayout.jsx', 'LoginPage.jsx', 'RegisterPage.jsx', 'ResetPasswo
   .map(f => `/* ---- ${f} ---- */\n` + strip(readFileSync(join(here, f), 'utf8')))
   .join('\n');
 
-// Sol taraf: 19 kanal (pazar yerleri, sosyal medya ve e-ticaret altyapıları karışık sırada)
+// Sol taraf: 20 kanal (pazar yerleri, sosyal medya ve e-ticaret altyapıları karışık sırada)
 const channels = [
   ['Web sitesi', null, 'web sitende'],
   ['Instagram', 'kanallar/instagram.svg', 'Instagram’da'],
@@ -32,6 +32,7 @@ const channels = [
   ['Ticimax', 'kanallar/ticimax.svg', 'Ticimax’ta'],
   ['Telegram', 'kanallar/telegram.svg', 'Telegram’da'],
   ['n11', 'kanallar/n11.png', 'n11’de'],
+  ['T-Soft', 'kanallar/tsoft-wordmark.svg', 'T-Soft’ta', null, true],
   ['Shopify', 'kanallar/shopify.svg', 'Shopify’da'],
   ['Messenger', 'kanallar/messenger.svg', 'Messenger’da'],
   ['Çiçeksepeti', 'kanallar/ciceksepeti.png', 'Çiçeksepeti’nde'],
