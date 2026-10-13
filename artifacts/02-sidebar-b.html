@@ -1,0 +1,377 @@
+<title>Ailways Çift Panel Menü</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap&subset=latin-ext" rel="stylesheet">
+<style>
+  /* Varyant B (refs/image.png): kenardan içeride duran mavi kapsül ikon rayı + bölüm sayfalarını listeleyen ikinci panel.
+     Panel kapanınca yalnızca ray kalır, ray ikonları sayfaları açılır bir listede gösterir. Zemin beyaz, tek tema. */
+  :root {
+    --bg: #FFFFFF;
+    --surface: #FFFFFF;
+    --surface-2: #F1F5F9;     /* hover, arama kutusu */
+    --line: #E3EAF0;
+    --fg: #0F1F2C;
+    --muted: #64748B;
+    --accent: #0A87C5;
+    --accent-2: #119DDA;
+    --accent-soft: #E6F4FB;
+    --rail-top: #16A6E0;      /* ray gradyanı: logonun tonları */
+    --rail-bottom: #0A82BE;
+    --crit: #D2392F;
+    --crit-soft: #FDECEA;
+    --warn: #B26100;
+    --warn-soft: #FFF3E0;
+    --shadow-rail: 0 10px 30px rgba(10, 130, 190, .28);
+    --shadow-pop: 0 2px 4px rgba(15, 31, 44, .06), 0 16px 40px rgba(15, 31, 44, .12);
+    --font-sans: "Geist", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, Consolas, monospace;
+    color-scheme: light;
+  }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-sans); font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+  .num { font-variant-numeric: tabular-nums; }
+  #root { height: 100%; }
+  .app { display: flex; height: 100%; }
+
+  /* ---------- Ray ---------- */
+  .rail-wrap { flex: none; padding: 14px 0 14px 14px; height: 100%; box-sizing: border-box; position: relative; z-index: 40; }
+  .rail {
+    width: 72px; height: 100%; box-sizing: border-box;
+    display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 18px 0 16px;
+    border-radius: 36px; background: linear-gradient(180deg, var(--rail-top), var(--rail-bottom));
+    box-shadow: var(--shadow-rail); color: #fff;
+  }
+  .rail-logo { width: 42px; height: 42px; border-radius: 13px; display: block; box-shadow: 0 0 0 2px rgba(255,255,255,.55); margin-bottom: 18px; }
+  .rail-sep { width: 26px; height: 1px; background: rgba(255,255,255,.35); margin: 10px 0; }
+  .rail-btn {
+    position: relative; width: 48px; height: 48px; border-radius: 15px; border: 0; background: none; cursor: pointer;
+    display: grid; place-items: center; color: rgba(255,255,255,.72);
+    transition: background-color 160ms ease, color 160ms ease;
+  }
+  .rail-btn:hover { background: rgba(255,255,255,.14); color: #fff; }
+  .rail-btn[aria-current="true"] { background: #fff; color: var(--accent); box-shadow: 0 4px 12px rgba(4, 60, 90, .22); }
+  .rail-btn:focus-visible { outline-color: #fff; }
+  .rail-badge { position: absolute; top: 6px; right: 6px; width: 9px; height: 9px; border-radius: 50%; background: #FF5A4E; box-shadow: 0 0 0 2px var(--rail-top); }
+  .rail-btn[aria-current="true"] .rail-badge { box-shadow: 0 0 0 2px #fff; }
+  .rail-spacer { flex: 1; }
+  .rail-avatar { width: 42px; height: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,.8); background: #fff; color: var(--accent); display: grid; place-items: center; font-weight: 650; cursor: pointer; padding: 0; }
+
+  /* ---------- İkinci panel ---------- */
+  .panel {
+    flex: none; width: 264px; height: 100%; box-sizing: border-box; overflow: hidden;
+    display: flex; flex-direction: column; padding: 30px 18px 18px 22px;
+    border-right: 1px solid var(--line);
+    transition: width 240ms cubic-bezier(0.23, 1, 0.32, 1), padding 240ms cubic-bezier(0.23, 1, 0.32, 1), opacity 180ms ease;
+  }
+  .panel[data-closed] { width: 0; padding-left: 0; padding-right: 0; opacity: 0; border-right-color: transparent; }
+  .panel-inner { width: 224px; display: flex; flex-direction: column; height: 100%; min-height: 0; }
+  .panel-head { display: flex; align-items: center; gap: 8px; margin-bottom: 22px; min-height: 40px; }
+  .panel-head h2 { margin: 0; font-size: 22px; font-weight: 650; letter-spacing: -0.02em; flex: 1; min-width: 0; }
+  .round-add { width: 38px; height: 38px; border-radius: 50%; border: 0; display: grid; place-items: center; cursor: pointer; color: #fff; background: linear-gradient(180deg, var(--accent-2), var(--accent)); box-shadow: 0 6px 14px rgba(10, 135, 197, .3); flex: none; }
+  .round-add:hover { filter: brightness(1.06); }
+  .icon-btn { width: 34px; height: 34px; border-radius: 10px; border: 0; background: none; color: var(--muted); display: grid; place-items: center; cursor: pointer; flex: none; transition: background-color 150ms ease, color 150ms ease; }
+  .icon-btn:hover { background: var(--surface-2); color: var(--fg); }
+  .nav-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; margin: 0 -6px; padding: 0 6px; scrollbar-width: thin; }
+  .nav-row {
+    display: flex; align-items: center; gap: 12px; width: 100%; height: 46px; padding: 0 10px; border: 0; border-radius: 12px;
+    background: none; cursor: pointer; text-align: left; color: var(--fg); font-size: 14.5px;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  .nav-row:hover { background: var(--surface-2); }
+  .nav-row .ic { color: var(--muted); display: inline-grid; flex: none; }
+  .nav-row[aria-current="page"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .nav-row[aria-current="page"] .ic { color: var(--accent); }
+  .nav-row .lbl { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chev { color: var(--muted); display: inline-grid; transition: transform 200ms ease; }
+  .chev[data-open] { transform: rotate(180deg); }
+  .sub { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 240ms cubic-bezier(0.23, 1, 0.32, 1); }
+  .sub[data-open] { grid-template-rows: 1fr; }
+  .sub > div { min-height: 0; overflow: hidden; }
+  .sub-row { display: flex; align-items: center; gap: 10px; width: 100%; height: 36px; padding: 0 10px 0 46px; border: 0; background: none; border-radius: 10px; cursor: pointer; color: var(--muted); text-align: left; font-size: 14px; }
+  .sub-row:hover { color: var(--fg); background: var(--surface-2); }
+  .sub-row[aria-current="true"] { color: var(--fg); font-weight: 600; }
+  .sub-row .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  .pill { display: inline-flex; align-items: center; height: 21px; padding: 0 8px; border-radius: 999px; font-size: 11.5px; font-weight: 650; font-variant-numeric: tabular-nums; flex: none; }
+  .pill-accent { background: var(--accent-soft); color: var(--accent); }
+  .pill-crit { background: var(--crit-soft); color: var(--crit); }
+  .nav-row[aria-current="page"] .pill-accent { background: #fff; }
+
+  .setup { margin-top: 14px; display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: 16px; background: var(--surface-2); border: 0; width: 100%; text-align: left; cursor: pointer; }
+  .setup:hover { background: #E9F0F6; }
+  .setup-ic { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; flex: none; color: #fff; background: linear-gradient(180deg, #FFB547, #F08A00); box-shadow: 0 6px 14px rgba(240, 138, 0, .28); }
+  .setup b { display: block; font-weight: 600; font-size: 13.5px; }
+  .setup span { color: var(--muted); font-size: 12.5px; }
+  .progress { height: 4px; border-radius: 2px; background: #DCE5EC; margin-top: 7px; overflow: hidden; }
+  .progress i { display: block; height: 100%; background: var(--accent); }
+
+  /* ---------- Açılır sayfa listesi (panel kapalıyken) ---------- */
+  .fly { position: fixed; z-index: 70; width: 232px; padding: 8px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-pop); }
+  .fly-title { font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 8px 10px 6px; }
+  .fly .nav-row { height: 40px; font-size: 14px; }
+  .tip { position: fixed; z-index: 60; pointer-events: none; transform: translateY(-50%); padding: 6px 10px; border-radius: 8px; background: var(--fg); color: #fff; font-size: 12.5px; font-weight: 500; white-space: nowrap; }
+
+  /* ---------- Ana alan ---------- */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100%; }
+  .topbar { flex: none; display: flex; align-items: center; gap: 14px; padding: 30px 36px 0; min-height: 40px; flex-wrap: wrap; }
+  .topbar h1 { margin: 0; font-size: 26px; font-weight: 650; letter-spacing: -0.02em; text-wrap: balance; }
+  .info { color: var(--muted); display: inline-grid; }
+  .search { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 999px; background: var(--surface-2); color: var(--muted); width: 240px; max-width: 100%; box-sizing: border-box; }
+  .search input { border: 0; background: none; outline: none; font: inherit; color: var(--fg); width: 100%; min-width: 0; }
+  .vr { width: 1px; height: 28px; background: var(--line); }
+  .assist { display: flex; align-items: center; gap: 10px; }
+  .assist small { display: block; color: var(--muted); font-size: 12px; line-height: 1.2; }
+  .assist b { display: block; font-size: 15px; line-height: 1.2; }
+  .stack { display: flex; }
+  .stack span { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; border: 2px solid #fff; margin-left: -8px; font-size: 11px; font-weight: 650; color: #fff; }
+  .stack span:first-child { margin-left: 0; }
+  .content { flex: 1; min-height: 0; overflow-y: auto; padding: 24px 36px 48px; }
+  .lead { color: var(--muted); margin: 6px 0 24px; max-width: 62ch; }
+  .placeholder { border: 1.5px dashed var(--line); border-radius: 20px; min-height: 320px; display: grid; place-items: center; text-align: center; padding: 32px 16px; color: var(--muted); }
+  .placeholder h3 { color: var(--fg); font-size: 16px; font-weight: 600; margin: 12px 0 4px; }
+  .placeholder p { margin: 0 auto; max-width: 48ch; }
+  kbd { font-family: var(--font-mono); font-size: 11.5px; padding: 1px 6px; border-radius: 5px; border: 1px solid var(--line); background: #fff; color: var(--fg); }
+  .support { position: fixed; right: 24px; bottom: 22px; z-index: 30; display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px 0 12px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--accent); font-weight: 600; cursor: pointer; box-shadow: 0 6px 20px rgba(15, 31, 44, .08); }
+  .support:hover { border-color: #CFE3EE; }
+
+  @media (max-width: 900px) {
+    .panel { display: none; }
+    .topbar { padding: 22px 16px 0; }
+    .content { padding: 20px 16px 96px; }
+    .search { order: 3; width: 100%; }
+    .vr, .assist small { display: none; }
+  }
+  @media (max-width: 520px) {
+    .rail-wrap { padding: 8px 0 8px 8px; }
+    .rail { width: 60px; border-radius: 30px; }
+    .rail-btn { width: 42px; height: 42px; }
+    .rail-logo { width: 36px; height: 36px; margin-bottom: 8px; }
+    .assist { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .panel, .sub, .chev { transition: none; } }
+</style>
+
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@hugeicons/react@1.1.10/dist/umd/index.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js"></script>
+<script>window.HI = {"Home01":[["path",{"d":"M3 11.9896V14.5C3 17.7998 3 19.4497 4.02513 20.4749C5.05025 21.5 6.70017 21.5 10 21.5H14C17.2998 21.5 18.9497 21.5 19.9749 20.4749C21 19.4497 21 17.7998 21 14.5V11.9896C21 10.3083 21 9.46773 20.6441 8.74005C20.2882 8.01237 19.6247 7.49628 18.2976 6.46411L16.2976 4.90855C14.2331 3.30285 13.2009 2.5 12 2.5C10.7991 2.5 9.76689 3.30285 7.70242 4.90855L5.70241 6.46411C4.37533 7.49628 3.71179 8.01237 3.3559 8.74005C3 9.46773 3 10.3083 3 11.9896Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"CheckList":[["path",{"d":"M11 6L21 6","stroke":"currentColor","strokeLinecap":"round","strokeWidth":"1.5"}],["path",{"d":"M11 12L21 12","stroke":"currentColor","strokeLinecap":"round","strokeWidth":"1.5"}],["path",{"d":"M11 18L21 18","stroke":"currentColor","strokeLinecap":"round","strokeWidth":"1.5"}],["path",{"d":"M3 7.39286C3 7.39286 4 8.04466 4.5 9C4.5 9 6 5.25 8 4","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M3 18.3929C3 18.3929 4 19.0447 4.5 20C4.5 20 6 16.25 8 15","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Analytics01":[["path",{"d":"M7 17L7 13","stroke":"currentColor","strokeLinecap":"round","strokeWidth":"1.5"}],["path",{"d":"M12 17L12 7","stroke":"currentColor","strokeLinecap":"round","strokeWidth":"1.5"}],["path",{"d":"M17 17L17 11","stroke":"currentColor","strokeLinecap":"round","strokeWidth":"1.5"}],["path",{"d":"M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z","stroke":"currentColor","strokeLinejoin":"round","strokeWidth":"1.5"}]],"BubbleChat":[["path",{"d":"M21.5 12C21.5 17.2467 17.2467 21.5 12 21.5C10.3719 21.5 8.8394 21.0904 7.5 20.3687C5.63177 19.362 4.37462 20.2979 3.26592 20.4658C3.09774 20.4913 2.93024 20.4302 2.80997 20.31C2.62741 20.1274 2.59266 19.8451 2.6935 19.6074C3.12865 18.5818 3.5282 16.6382 2.98341 15C2.6698 14.057 2.5 13.0483 2.5 12C2.5 6.75329 6.75329 2.5 12 2.5C17.2467 2.5 21.5 6.75329 21.5 12Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M12.1257 12H12.0007M8.125 12H8M16.125 12H16M12.2507 12C12.2507 12.1381 12.1388 12.25 12.0007 12.25C11.8627 12.25 11.7507 12.1381 11.7507 12C11.7507 11.8619 11.8627 11.75 12.0007 11.75C12.1388 11.75 12.2507 11.8619 12.2507 12ZM8.25 12C8.25 12.1381 8.13807 12.25 8 12.25C7.86193 12.25 7.75 12.1381 7.75 12C7.75 11.8619 7.86193 11.75 8 11.75C8.13807 11.75 8.25 11.8619 8.25 12ZM16.25 12C16.25 12.1381 16.1381 12.25 16 12.25C15.8619 12.25 15.75 12.1381 15.75 12C15.75 11.8619 15.8619 11.75 16 11.75C16.1381 11.75 16.25 11.8619 16.25 12Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Inbox":[["path",{"d":"M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M21.5 13.5H16.5743C15.7322 13.5 15.0706 14.2036 14.6995 14.9472C14.2963 15.7551 13.4889 16.5 12 16.5C10.5111 16.5 9.70373 15.7551 9.30054 14.9472C8.92942 14.2036 8.26777 13.5 7.42566 13.5H2.5","stroke":"currentColor","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Idea01":[["path",{"d":"M8 16.4998C6.7725 15.4011 6 13.7768 6 11.9998C6 8.68605 8.68629 5.99976 12 5.99976C15.3137 5.99976 18 8.68605 18 11.9998C18 13.7768 17.2275 15.4011 16 16.4998","stroke":"currentColor","strokeLinecap":"round","strokeWidth":"1.5"}],["path",{"d":"M12 11.9998V16.4998","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M9.5 18.9998H14.5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M10.5 21.4998H13.5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M3.5 11.9998H2.5M5.98438 5.97632L5.23438 5.23022M18.0195 5.97632L18.7695 5.23022M21.5 11.9998H20.5M12 2.49976V3.49976","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Bot":[["path",{"d":"M13 7H11C8.19108 7 6.78661 7 5.77772 7.67412C5.34096 7.96596 4.96596 8.34096 4.67412 8.77772C4 9.78661 4 11.1911 4 14C4 16.8089 4 18.2134 4.67412 19.2223C4.96596 19.659 5.34096 20.034 5.77772 20.3259C6.78661 21 8.19108 21 11 21H13C15.8089 21 17.2134 21 18.2223 20.3259C18.659 20.034 19.034 19.659 19.3259 19.2223C20 18.2134 20 16.8089 20 14C20 11.1911 20 9.78661 19.3259 8.77772C19.034 8.34096 18.659 7.96596 18.2223 7.67412C17.2134 7 15.8089 7 13 7Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M4 14H2","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M10 17H14","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M22 14H20","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M15 11V13","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M9 11V13","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M12 7C12 5.11438 12 4.17157 11.4142 3.58579C10.8284 3 9.88562 3 8 3","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"AiChat02":[["path",{"d":"M14.1706 20.8905C18.3536 20.6125 21.6856 17.2332 21.9598 12.9909C22.0134 12.1607 22.0134 11.3009 21.9598 10.4707C21.6856 6.22838 18.3536 2.84913 14.1706 2.57107C12.7435 2.47621 11.2536 2.47641 9.8294 2.57107C5.64639 2.84913 2.31441 6.22838 2.04024 10.4707C1.98659 11.3009 1.98659 12.1607 2.04024 12.9909C2.1401 14.536 2.82343 15.9666 3.62791 17.1746C4.09501 18.0203 3.78674 19.0758 3.30021 19.9978C2.94941 20.6626 2.77401 20.995 2.91484 21.2351C3.05568 21.4752 3.37026 21.4829 3.99943 21.4982C5.24367 21.5285 6.08268 21.1757 6.74868 20.6846C7.1264 20.4061 7.31527 20.2668 7.44544 20.2508C7.5756 20.2348 7.83177 20.3403 8.34401 20.5513C8.8044 20.7409 9.33896 20.8579 9.8294 20.8905C11.2536 20.9852 12.7435 20.9854 14.1706 20.8905Z","stroke":"currentColor","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M7.5 15L9.34189 9.47434C9.43631 9.19107 9.7014 9 10 9C10.2986 9 10.5637 9.19107 10.6581 9.47434L12.5 15M15.5 9V15M8.5 13H11.5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Package":[["path",{"d":"M12 22C11.1818 22 10.4002 21.6698 8.83693 21.0095C4.94564 19.3657 3 18.5438 3 17.1613C3 16.7742 3 10.0645 3 7M12 22C12.8182 22 13.5998 21.6698 15.1631 21.0095C19.0544 19.3657 21 18.5438 21 17.1613V7M12 22L12 11.3548","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M8.32592 9.69138L5.40472 8.27785C3.80157 7.5021 3 7.11423 3 6.5C3 5.88577 3.80157 5.4979 5.40472 4.72215L8.32592 3.30862C10.1288 2.43621 11.0303 2 12 2C12.9697 2 13.8712 2.4362 15.6741 3.30862L18.5953 4.72215C20.1984 5.4979 21 5.88577 21 6.5C21 7.11423 20.1984 7.5021 18.5953 8.27785L15.6741 9.69138C13.8712 10.5638 12.9697 11 12 11C11.0303 11 10.1288 10.5638 8.32592 9.69138Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M6 12L8 13","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M17 4L7 9","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"ShoppingCart01":[["path",{"d":"M10.5 20.25C10.5 20.6642 10.1642 21 9.75 21C9.33579 21 9 20.6642 9 20.25C9 19.8358 9.33579 19.5 9.75 19.5C10.1642 19.5 10.5 19.8358 10.5 20.25Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M19 20.25C19 20.6642 18.6642 21 18.25 21C17.8358 21 17.5 20.6642 17.5 20.25C17.5 19.8358 17.8358 19.5 18.25 19.5C18.6642 19.5 19 19.8358 19 20.25Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M2 3H2.20664C3.53124 3 4.19354 3 4.6255 3.40221C5.05746 3.80441 5.10464 4.46503 5.19902 5.78626L5.45035 9.30496C5.5924 11.2936 5.66342 12.2879 5.96476 13.0961C6.62531 14.8677 8.08229 16.2244 9.89648 16.757C10.7241 17 11.7267 17 13.7317 17C15.8373 17 16.89 17 17.7417 16.7416C19.6593 16.1599 21.1599 14.6593 21.7416 12.7417C22 11.89 22 10.8433 22 8.75C22 8.05222 22 7.70333 21.9139 7.41943C21.72 6.78023 21.2198 6.28002 20.5806 6.08612C20.2967 6 19.9478 6 19.25 6H5.5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M16 10V13M11 10V13","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Image01":[["circle",{"cx":"7.5","cy":"7.5","r":"1.5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z","stroke":"currentColor","strokeWidth":"1.5"}],["path",{"d":"M5 21C9.37246 15.775 14.2741 8.88406 21.4975 13.5424","stroke":"currentColor","strokeWidth":"1.5"}]],"PlugSocket":[["path",{"d":"M17.854 12.16C17.471 12.6105 16.7631 12.6138 16.3165 12.1671L11.8329 7.68351C11.3862 7.23686 11.3895 6.529 11.84 6.14596L13.071 5.09939C13.9559 4.34704 15.0349 3.84824 16.2044 3.6509L16.9294 3.52858C17.614 3.41306 18.3339 3.65221 18.8475 4.16577L19.8342 5.15255C20.3478 5.66611 20.5869 6.38601 20.4714 7.07063L20.3491 7.79559C20.1518 8.9651 19.653 10.0441 18.9006 10.929L17.854 12.16Z","stroke":"currentColor","strokeWidth":"1.5"}],["path",{"d":"M19.5 4.5L21.5 2.5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M2.5 21.5L4.5 19.5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M6.14596 11.84C6.52901 11.3895 7.23686 11.3862 7.68351 11.8329L12.1671 16.3165C12.6138 16.7631 12.6105 17.471 12.16 17.854L10.929 18.9006C10.0441 19.653 8.9651 20.1518 7.79559 20.3491L7.07063 20.4714C6.38601 20.5869 5.66611 20.3478 5.15255 19.8342L4.16577 18.8475C3.65221 18.3339 3.41306 17.614 3.52858 16.9294L3.6509 16.2044C3.84824 15.0349 4.34704 13.9559 5.09939 13.071L6.14596 11.84Z","stroke":"currentColor","strokeWidth":"1.5"}],["path",{"d":"M8.5 12.5L10.5 10.5M11.5 15.5L13.5 13.5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Settings02":[["path",{"d":"M15.5 12C15.5 13.933 13.933 15.5 12 15.5C10.067 15.5 8.5 13.933 8.5 12C8.5 10.067 10.067 8.5 12 8.5C13.933 8.5 15.5 10.067 15.5 12Z","stroke":"currentColor","strokeWidth":"1.5"}],["path",{"d":"M21.011 14.0965C21.5329 13.9558 21.7939 13.8854 21.8969 13.7508C22 13.6163 22 13.3998 22 12.9669V11.0332C22 10.6003 22 10.3838 21.8969 10.2493C21.7938 10.1147 21.5329 10.0443 21.011 9.90358C19.0606 9.37759 17.8399 7.33851 18.3433 5.40087C18.4817 4.86799 18.5509 4.60156 18.4848 4.44529C18.4187 4.28902 18.2291 4.18134 17.8497 3.96596L16.125 2.98673C15.7528 2.77539 15.5667 2.66972 15.3997 2.69222C15.2326 2.71472 15.0442 2.90273 14.6672 3.27873C13.208 4.73448 10.7936 4.73442 9.33434 3.27864C8.95743 2.90263 8.76898 2.71463 8.60193 2.69212C8.43489 2.66962 8.24877 2.77529 7.87653 2.98663L6.15184 3.96587C5.77253 4.18123 5.58287 4.28891 5.51678 4.44515C5.45068 4.6014 5.51987 4.86787 5.65825 5.4008C6.16137 7.3385 4.93972 9.37763 2.98902 9.9036C2.46712 10.0443 2.20617 10.1147 2.10308 10.2492C2 10.3838 2 10.6003 2 11.0332V12.9669C2 13.3998 2 13.6163 2.10308 13.7508C2.20615 13.8854 2.46711 13.9558 2.98902 14.0965C4.9394 14.6225 6.16008 16.6616 5.65672 18.5992C5.51829 19.1321 5.44907 19.3985 5.51516 19.5548C5.58126 19.7111 5.77092 19.8188 6.15025 20.0341L7.87495 21.0134C8.24721 21.2247 8.43334 21.3304 8.6004 21.3079C8.76746 21.2854 8.95588 21.0973 9.33271 20.7213C10.7927 19.2644 13.2088 19.2643 14.6689 20.7212C15.0457 21.0973 15.2341 21.2853 15.4012 21.3078C15.5682 21.3303 15.7544 21.2246 16.1266 21.0133L17.8513 20.034C18.2307 19.8187 18.4204 19.711 18.4864 19.5547C18.5525 19.3984 18.4833 19.132 18.3448 18.5991C17.8412 16.6616 19.0609 14.6226 21.011 14.0965Z","stroke":"currentColor","strokeLinecap":"round","strokeWidth":"1.5"}]],"User":[["path",{"d":"M20 21.0001C19.713 17.269 16.7289 14.3151 12.995 14.0662L12 13.9999C11.6446 14.0096 11.3134 14.0225 11.0008 14.0378C7.3 14.2192 4.28417 17.3057 4 21.0001","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["circle",{"cx":"12","cy":"6.99988","r":"4","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"CreditCard":[["path",{"d":"M2 12C2 8.46252 2 6.69377 3.0528 5.5129C3.22119 5.32403 3.40678 5.14935 3.60746 4.99087C4.86213 4 6.74142 4 10.5 4H13.5C17.2586 4 19.1379 4 20.3925 4.99087C20.5932 5.14935 20.7788 5.32403 20.9472 5.5129C22 6.69377 22 8.46252 22 12C22 15.5375 22 17.3062 20.9472 18.4871C20.7788 18.676 20.5932 18.8506 20.3925 19.0091C19.1379 20 17.2586 20 13.5 20H10.5C6.74142 20 4.86213 20 3.60746 19.0091C3.40678 18.8506 3.22119 18.676 3.0528 18.4871C2 17.3062 2 15.5375 2 12Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M10 16H11.5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M14.5 16L18 16","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M2 9H22","stroke":"currentColor","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Invoice01":[["path",{"d":"M4 18.6458V8.05426C4 5.20025 4 3.77325 4.87868 2.88663C5.75736 2 7.17157 2 10 2H14C16.8284 2 18.2426 2 19.1213 2.88663C20 3.77325 20 5.20025 20 8.05426V18.6458C20 20.1575 20 20.9133 19.538 21.2108C18.7831 21.6971 17.6161 20.6774 17.0291 20.3073C16.5441 20.0014 16.3017 19.8485 16.0325 19.8397C15.7417 19.8301 15.4949 19.9768 14.9709 20.3073L13.06 21.5124C12.5445 21.8374 12.2868 22 12 22C11.7132 22 11.4555 21.8374 10.94 21.5124L9.02913 20.3073C8.54415 20.0014 8.30166 19.8485 8.03253 19.8397C7.74172 19.8301 7.49493 19.9768 6.97087 20.3073C6.38395 20.6774 5.21687 21.6971 4.46195 21.2108C4 20.9133 4 20.1575 4 18.6458Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M11 11H8","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M14 7L8 7","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"MagicWand01":[["path",{"d":"M13.9258 12.7775L11.7775 10.6292C11.4847 10.3364 11.3383 10.19 11.1803 10.1117C10.8798 9.96277 10.527 9.96277 10.2264 10.1117C10.0685 10.19 9.92207 10.3364 9.62923 10.6292C9.33638 10.9221 9.18996 11.0685 9.11169 11.2264C8.96277 11.527 8.96277 11.8798 9.11169 12.1803C9.18996 12.3383 9.33638 12.4847 9.62923 12.7775L11.7775 14.9258M13.9258 12.7775L20.3708 19.2225C20.6636 19.5153 20.81 19.6617 20.8883 19.8197C21.0372 20.1202 21.0372 20.473 20.8883 20.7736C20.81 20.9315 20.6636 21.0779 20.3708 21.3708C20.0779 21.6636 19.9315 21.81 19.7736 21.8883C19.473 22.0372 19.1202 22.0372 18.8197 21.8883C18.6617 21.81 18.5153 21.6636 18.2225 21.3708L11.7775 14.9258M13.9258 12.7775L11.7775 14.9258","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M17 2L17.2948 2.7966C17.6813 3.84117 17.8746 4.36345 18.2556 4.74445C18.6366 5.12545 19.1588 5.31871 20.2034 5.70523L21 6L20.2034 6.29477C19.1588 6.68129 18.6366 6.87456 18.2556 7.25555C17.8746 7.63655 17.6813 8.15883 17.2948 9.2034L17 10L16.7052 9.2034C16.3187 8.15884 16.1254 7.63655 15.7444 7.25555C15.3634 6.87455 14.8412 6.68129 13.7966 6.29477L13 6L13.7966 5.70523C14.8412 5.31871 15.3634 5.12545 15.7444 4.74445C16.1254 4.36345 16.3187 3.84117 16.7052 2.7966L17 2Z","stroke":"currentColor","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M6 4L6.22108 4.59745C6.51097 5.38087 6.65592 5.77259 6.94167 6.05834C7.22741 6.34408 7.61913 6.48903 8.40255 6.77892L9 7L8.40255 7.22108C7.61913 7.51097 7.22741 7.65592 6.94166 7.94167C6.65592 8.22741 6.51097 8.61913 6.22108 9.40255L6 10L5.77892 9.40255C5.48903 8.61913 5.34408 8.22741 5.05833 7.94167C4.77259 7.65592 4.38087 7.51097 3.59745 7.22108L3 7L3.59745 6.77892C4.38087 6.48903 4.77259 6.34408 5.05833 6.05833C5.34408 5.77259 5.48903 5.38087 5.77892 4.59745L6 4Z","stroke":"currentColor","strokeLinejoin":"round","strokeWidth":"1.5"}]],"SidebarLeft":[["path",{"d":"M2 12C2 8.31087 2 6.4663 2.81382 5.15877C3.1149 4.67502 3.48891 4.25427 3.91891 3.91554C5.08116 3 6.72077 3 10 3H14C17.2792 3 18.9188 3 20.0811 3.91554C20.5111 4.25427 20.8851 4.67502 21.1862 5.15877C22 6.4663 22 8.31087 22 12C22 15.6891 22 17.5337 21.1862 18.8412C20.8851 19.325 20.5111 19.7457 20.0811 20.0845C18.9188 21 17.2792 21 14 21H10C6.72077 21 5.08116 21 3.91891 20.0845C3.48891 19.7457 3.1149 19.325 2.81382 18.8412C2 17.5337 2 15.6891 2 12Z","stroke":"currentColor","strokeWidth":"1.5"}],["path",{"d":"M9.5 3L9.5 21","stroke":"currentColor","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M5 7H6M5 10H6","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"HelpCircle":[["circle",{"cx":"12","cy":"12","r":"10","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M9.5 9.5C9.5 8.11929 10.6193 7 12 7C13.3807 7 14.5 8.11929 14.5 9.5C14.5 10.3569 14.0689 11.1131 13.4117 11.5636C12.7283 12.0319 12 12.6716 12 13.5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M12.125 16.75H12M12.25 16.75C12.25 16.8881 12.1381 17 12 17C11.8619 17 11.75 16.8881 11.75 16.75C11.75 16.6119 11.8619 16.5 12 16.5C12.1381 16.5 12.25 16.6119 12.25 16.75Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"CustomerSupport":[["path",{"d":"M17 10.8045C17 10.4588 17 10.286 17.052 10.132C17.2032 9.68444 17.6018 9.51076 18.0011 9.32888C18.45 9.12442 18.6744 9.02219 18.8968 9.0042C19.1493 8.98378 19.4022 9.03818 19.618 9.15929C19.9041 9.31984 20.1036 9.62493 20.3079 9.87302C21.2513 11.0188 21.7229 11.5918 21.8955 12.2236C22.0348 12.7334 22.0348 13.2666 21.8955 13.7764C21.6438 14.6979 20.8485 15.4704 20.2598 16.1854C19.9587 16.5511 19.8081 16.734 19.618 16.8407C19.4022 16.9618 19.1493 17.0162 18.8968 16.9958C18.6744 16.9778 18.45 16.8756 18.0011 16.6711C17.6018 16.4892 17.2032 16.3156 17.052 15.868C17 15.714 17 15.5412 17 15.1955V10.8045Z","stroke":"currentColor","strokeWidth":"1.5"}],["path",{"d":"M7 10.8046C7 10.3694 6.98778 9.97821 6.63591 9.6722C6.50793 9.5609 6.33825 9.48361 5.99891 9.32905C5.55001 9.12458 5.32556 9.02235 5.10316 9.00436C4.43591 8.9504 4.07692 9.40581 3.69213 9.87318C2.74875 11.019 2.27706 11.5919 2.10446 12.2237C1.96518 12.7336 1.96518 13.2668 2.10446 13.7766C2.3562 14.6981 3.15152 15.4705 3.74021 16.1856C4.11129 16.6363 4.46577 17.0475 5.10316 16.996C5.32556 16.978 5.55001 16.8757 5.99891 16.6713C6.33825 16.5167 6.50793 16.4394 6.63591 16.3281C6.98778 16.0221 7 15.631 7 15.1957V10.8046Z","stroke":"currentColor","strokeWidth":"1.5"}],["path",{"d":"M5 9C5 5.68629 8.13401 3 12 3C15.866 3 19 5.68629 19 9","stroke":"currentColor","strokeLinecap":"square","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M19 17V17.8C19 19.5673 17.2091 21 15 21H13","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Logout01":[["path",{"d":"M15.5 8.04045C15.4588 6.87972 15.3216 6.15451 14.8645 5.58671C14.2114 4.77536 13.0944 4.52064 10.8605 4.01121L9.85915 3.78286C6.4649 3.00882 4.76777 2.6218 3.63388 3.51317C2.5 4.40454 2.5 6.1257 2.5 9.56803V14.432C2.5 17.8743 2.5 19.5955 3.63388 20.4868C4.76777 21.3782 6.4649 20.9912 9.85915 20.2171L10.8605 19.9888C13.0944 19.4794 14.2114 19.2246 14.8645 18.4133C15.3216 17.8455 15.4588 17.1203 15.5 15.9595","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M18.5 9.01172C18.5 9.01172 21.5 11.2212 21.5 12.0117C21.5 12.8023 18.5 15.0117 18.5 15.0117M21 12.0117H8.49998","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Search01":[["path",{"d":"M17 17L21 21","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19C15.4183 19 19 15.4183 19 11Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"ArrowRight01":[["path",{"d":"M9.00005 6C9.00005 6 15 10.4189 15 12C15 13.5812 9 18 9 18","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Menu01":[["path",{"d":"M4 5L20 5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M4 12L20 12","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M4 19L20 19","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"UnfoldMore":[["path",{"d":"M18 14C18 14 13.5811 19 12 19C10.4188 19 6 14 6 14","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M18 9.99996C18 9.99996 13.5811 5.00001 12 5C10.4188 4.99999 6 10 6 10","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Cancel01":[["path",{"d":"M18 6L6.00081 17.9992M17.9992 18L6 6.00085","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Moon02":[["path",{"d":"M21.5 14.0784C20.3003 14.7189 18.9301 15.0821 17.4751 15.0821C12.7491 15.0821 8.91792 11.2509 8.91792 6.52485C8.91792 5.06986 9.28105 3.69968 9.92163 2.5C5.66765 3.49698 2.5 7.31513 2.5 11.8731C2.5 17.1899 6.8101 21.5 12.1269 21.5C16.6849 21.5 20.503 18.3324 21.5 14.0784Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Sun03":[["path",{"d":"M17 12C17 14.7614 14.7614 17 12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12Z","stroke":"currentColor","strokeWidth":"1.5"}],["path",{"d":"M12 2V3.5M12 20.5V22M19.0708 19.0713L18.0101 18.0106M5.98926 5.98926L4.9286 4.9286M22 12H20.5M3.5 12H2M19.0713 4.92871L18.0106 5.98937M5.98975 18.0107L4.92909 19.0714","stroke":"currentColor","strokeLinecap":"round","strokeWidth":"1.5"}]],"Store01":[["path",{"d":"M3.50002 10V15C3.50002 17.8284 3.50002 19.2426 4.37869 20.1213C5.25737 21 6.67159 21 9.50002 21H14.5C17.3284 21 18.7427 21 19.6213 20.1213C20.5 19.2426 20.5 17.8284 20.5 15V10","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M17 7.50184C17 8.88255 15.8807 9.99997 14.5 9.99997C13.1193 9.99997 12 8.88068 12 7.49997C12 8.88068 10.8807 9.99997 9.50002 9.99997C8.1193 9.99997 7.00002 8.88068 7.00002 7.49997C7.00002 8.88068 5.82655 9.99997 4.37901 9.99997C3.59984 9.99997 2.90008 9.67567 2.42 9.16087C1.59462 8.2758 2.12561 6.97403 2.81448 5.98842L3.20202 5.45851C4.08386 4.2527 4.52478 3.6498 5.16493 3.32494C5.80508 3.00008 6.55201 3.00018 8.04587 3.00038L15.9551 3.00143C17.4485 3.00163 18.1952 3.00173 18.8351 3.32658C19.475 3.65143 19.9158 4.25414 20.7974 5.45957L21.1855 5.99029C21.8744 6.97589 22.4054 8.27766 21.58 9.16273C21.0999 9.67754 20.4002 10.0018 19.621 10.0018C18.1734 10.0018 17 8.88255 17 7.50184Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M14.9971 17C14.3133 17.6072 13.2247 18 11.9985 18C10.7723 18 9.68376 17.6072 9 17","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Analytics02":[["path",{"d":"M6.5 17.5L6.5 14.5M11.5 17.5L11.5 8.5M16.5 17.5V13.5","stroke":"currentColor","strokeLinecap":"round","strokeWidth":"1.5"}],["path",{"d":"M21.5 5.5C21.5 7.15685 20.1569 8.5 18.5 8.5C16.8431 8.5 15.5 7.15685 15.5 5.5C15.5 3.84315 16.8431 2.5 18.5 2.5C20.1569 2.5 21.5 3.84315 21.5 5.5Z","stroke":"currentColor","strokeWidth":"1.5"}],["path",{"d":"M21.4955 11C21.4955 11 21.5 11.3395 21.5 12C21.5 16.4784 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4784 2.5 12C2.5 7.52169 2.5 5.28252 3.89124 3.89127C5.28249 2.50003 7.52166 2.50003 12 2.50003L13 2.5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"CheckmarkCircle02":[["path",{"d":"M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12Z","stroke":"currentColor","strokeWidth":"1.5"}],["path",{"d":"M8 12.5L10.5 15L16 9","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Add01":[["path",{"d":"M12.001 5.00003V19.002","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M19.002 12.002L4.99998 12.002","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"ArrowDown01":[["path",{"d":"M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Instagram":[["path",{"d":"M3 12C3 7.75736 3 5.63604 4.31802 4.31802C5.63604 3 7.75736 3 12 3C16.2426 3 18.364 3 19.682 4.31802C21 5.63604 21 7.75736 21 12C21 16.2426 21 18.364 19.682 19.682C18.364 21 16.2426 21 12 21C7.75736 21 5.63604 21 4.31802 19.682C3 18.364 3 16.2426 3 12Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M17.3748 6.75024H17.2498M17.4998 6.75024C17.4998 6.88832 17.3878 7.00024 17.2498 7.00024C17.1117 7.00024 16.9998 6.88832 16.9998 6.75024C16.9998 6.61217 17.1117 6.50024 17.2498 6.50024C17.3878 6.50024 17.4998 6.61217 17.4998 6.75024Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Globe02":[["circle",{"cx":"12","cy":"12","r":"10","stroke":"currentColor","strokeWidth":"1.5"}],["path",{"d":"M8 12C8 18 12 22 12 22C12 22 16 18 16 12C16 6 12 2 12 2C12 2 8 6 8 12Z","stroke":"currentColor","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M21 15H3","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M21 9H3","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Telegram":[["path",{"d":"M11.9854 15.4083L15.2268 19.0936C16.4277 20.4589 17.0282 21.1416 17.6567 20.9754C18.2852 20.8092 18.5008 19.9108 18.9318 18.1138L21.3229 8.1459C21.9868 5.37832 22.3187 3.99454 21.5808 3.312C20.843 2.62947 19.564 3.13725 17.0061 4.15282L5.13876 8.86449C3.09293 9.67674 2.07001 10.0829 2.00507 10.7808C1.99842 10.8522 1.99831 10.9241 2.00474 10.9955C2.06754 11.6937 3.08921 12.1033 5.13255 12.9223C6.05838 13.2934 6.5213 13.479 6.8532 13.8344C6.89052 13.8743 6.9264 13.9157 6.96078 13.9584C7.26658 14.3384 7.39709 14.8371 7.65808 15.8344L8.14653 17.701C8.4005 18.6715 8.52749 19.1568 8.86008 19.223C9.19267 19.2891 9.48225 18.8867 10.0614 18.0819L11.9854 15.4083ZM11.9854 15.4083L11.6676 15.0771C11.3059 14.7001 11.1251 14.5117 11.1251 14.2775C11.1251 14.0433 11.3059 13.8548 11.6676 13.4778L15.2406 9.75409","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Rocket01":[["path",{"d":"M6.21875 11.618L3.31189 11.2378C2.71644 11.1606 2.31883 10.5841 2.58348 10.0458C3.42523 8.33365 5.6195 6.35437 9.73988 6.68079M6.21875 11.618C7.27445 9.85426 8.57175 8.00435 9.73988 6.68079M6.21875 11.618L11.882 17.2812M9.73988 6.68079C13.4105 2.58986 17.1745 1.728 19.5937 2.06685C20.5508 2.2009 21.2991 2.94917 21.4332 3.90626C21.772 6.32551 20.9101 10.0895 16.8192 13.7601M11.882 17.2812L12.2622 20.1881C12.3394 20.7836 12.9159 21.1812 13.4542 20.9165C15.1664 20.0748 17.1456 17.8805 16.8192 13.7601M11.882 17.2812C13.6457 16.2255 15.4956 14.9282 16.8192 13.7601","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M17.5 8C17.5 6.89543 16.6046 6 15.5 6C14.3954 6 13.5 6.89543 13.5 8C13.5 9.10457 14.3954 10 15.5 10C16.6046 10 17.5 9.10457 17.5 8Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M4 22L8 18M4 17L5.5 15.5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"AiMagic":[["path",{"d":"M13.427 8.08396C12.8007 5.84272 12.3226 4 11.0004 4C9.67824 4 9.19964 5.84274 8.5731 8.08399C8.31853 8.99465 8.19125 9.44998 7.82042 9.82077C7.4496 10.1916 6.99434 10.3188 6.08381 10.5732C3.84273 11.1995 2 11.6775 2 13C2 14.3225 3.84273 14.8005 6.08381 15.4268C6.99434 15.6812 7.4496 15.8084 7.82042 16.1792C8.19125 16.55 8.31853 17.0054 8.5731 17.916C9.19964 20.1573 9.67824 22 11.0004 22C12.3226 22 12.8007 20.1573 13.427 17.916C13.6815 17.0054 13.8087 16.5501 14.1795 16.1793C14.5504 15.8085 15.0056 15.6812 15.9162 15.4268C18.1573 14.8005 20 14.3225 20 13C20 11.6775 18.1573 11.1995 15.9162 10.5732C15.0056 10.3188 14.5504 10.1915 14.1795 9.8207C13.8087 9.44986 13.6815 8.99456 13.427 8.08396Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M19.5 2.9375V4.5M19.5 4.5V6.0625M19.5 4.5H18.25M19.5 4.5H20.75M22 4.5L21.548 4.34934C20.8497 4.11658 20.5006 4.00019 20.2502 3.74981C19.9998 3.49942 19.8834 3.15027 19.6507 2.45198L19.5 2L19.3493 2.45198C19.1166 3.15027 19.0002 3.49942 18.7498 3.74981C18.4994 4.00019 18.1503 4.11658 17.452 4.34934L17 4.5L17.452 4.65066C18.1503 4.88342 18.4994 4.99981 18.7498 5.25019C19.0002 5.50058 19.1166 5.84973 19.3493 6.54802L19.5 7L19.6507 6.54802C19.8834 5.84973 19.9998 5.50058 20.2502 5.25019C20.5006 4.99981 20.8497 4.88342 21.548 4.65066L22 4.5Z","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Whatsapp":[["path",{"d":"M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.3789 2.27907 14.6926 2.78382 15.8877C3.06278 16.5481 3.20226 16.8784 3.21953 17.128C3.2368 17.3776 3.16334 17.6521 3.01642 18.2012L2 22L5.79877 20.9836C6.34788 20.8367 6.62244 20.7632 6.87202 20.7805C7.12161 20.7977 7.45185 20.9372 8.11235 21.2162C9.30745 21.7209 10.6211 22 12 22Z","stroke":"currentColor","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M8.58815 12.3773L9.45909 11.2956C9.82616 10.8397 10.2799 10.4153 10.3155 9.80826C10.3244 9.65494 10.2166 8.96657 10.0008 7.58986C9.91601 7.04881 9.41086 7 8.97332 7C8.40314 7 8.11805 7 7.83495 7.12931C7.47714 7.29275 7.10979 7.75231 7.02917 8.13733C6.96539 8.44196 7.01279 8.65187 7.10759 9.07169C7.51023 10.8548 8.45481 12.6158 9.91948 14.0805C11.3842 15.5452 13.1452 16.4898 14.9283 16.8924C15.3481 16.9872 15.558 17.0346 15.8627 16.9708C16.2477 16.8902 16.7072 16.5229 16.8707 16.165C17 15.8819 17 15.5969 17 15.0267C17 14.5891 16.9512 14.084 16.4101 13.9992C15.0334 13.7834 14.3451 13.6756 14.1917 13.6845C13.5847 13.7201 13.1603 14.1738 12.7044 14.5409L11.6227 15.4118","stroke":"currentColor","strokeWidth":"1.5"}]],"SidebarLeft01":[["path",{"d":"M2 12C2 8.25027 2 6.3754 2.95491 5.06107C3.26331 4.6366 3.6366 4.26331 4.06107 3.95491C5.3754 3 7.25027 3 11 3H13C16.7497 3 18.6246 3 19.9389 3.95491C20.3634 4.26331 20.7367 4.6366 21.0451 5.06107C22 6.3754 22 8.25027 22 12C22 15.7497 22 17.6246 21.0451 18.9389C20.7367 19.3634 20.3634 19.7367 19.9389 20.0451C18.6246 21 16.7497 21 13 21H11C7.25027 21 5.3754 21 4.06107 20.0451C3.6366 19.7367 3.26331 19.3634 2.95491 18.9389C2 17.6246 2 15.7497 2 12Z","stroke":"currentColor","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M9.5 3.5L9.5 20.5","stroke":"currentColor","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M5 7C5 7 5.91421 7 6.5 7","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M5 11H6.5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}],["path",{"d":"M17 10L15.7735 11.0572C15.2578 11.5016 15 11.7239 15 12C15 12.2761 15.2578 12.4984 15.7735 12.9428L17 14","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]],"Tick02":[["path",{"d":"M5 14L8.5 17.5L19 6.5","stroke":"currentColor","strokeLinecap":"round","strokeLinejoin":"round","strokeWidth":"1.5"}]]};</script>
+
+<script type="text/babel" data-presets="react">
+const { useEffect, useRef, useState, useCallback } = React;
+const { HugeiconsIcon } = HugeiconsReact;
+const I = window.HI;
+const LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAR/UlEQVR42p06aZAc1Xnf997rnmNn9l5JKy26hbw6VgdCiAgscILAKcCKwmWCoYjAETgCYRy7krgqP5xyiKE4zGEIgsTCgOOUAzYWR2LLFSR0CwkCSAJpD2kleSXtOXd3v/flR/dMv+6eWRF6Z3enu9/xve++sOlfjwAAAhAELgQEIALA8hPynvsXBW69NcibC1R+jwDlpZCAwP+CAIQA5C1DEFkteuMN9aaCqMz2Vi0vRUgBcCm6JKF3THdFdwYAuqADECASVY7q/bq7uHBXDkwEQRiJAnBjAHek/Qp/Irk/qGM4RJYK1ol8hKNGIArikchHLAXHUHDNMGWDFPHWwQgbEDAA0reIwK6/DX3xYaPAnOipP8dF0YmhM1IAB+TtJjRA3cOVwcAIJitvyyR2WZ2gTJHKKZDCIkIaL2MUfAwjMQxVAF/6oqIaJsJzKfSWauCo9iLh6SGlgXQestV+y847kGo8oS/GKuMc7AtdwmeP8TBflehhxRFRqlEe0kcSYFnBIgY0S1m9js967hNRC0FIXwCHviQigaaB9HNoaq6CO6Ia6uc82xOA8MUvJFMISGFSUFVDpuFRRxoDUEFQUTMyGBVyCqCaqDbwHumgIsSkmSnNMmnaiKoZA+9lGI/ekLykOA8ghyJ2gGohFqLzNFuq7coAiDS16n2hir4nqjyqjCv/uE+CH8/g2Ioum5RgnlUOmZqoYYHK+mUQSfsEbG3QGgAbTxVWgU23J1RtGCGAJVVbnL98VUdno1mwiQH6pifwN3irI60q11P0O7Hgsal8bNIoF0EG6fiiEMk5QM5St89tmJAU6+Y1WVIhnk8ey0tFCO/B492C/4XKzML84RSgrMdYQWRQFYqU9y5vVZTUXifWL2hWBDfPbljQHMvbEt0FtY9/6STwB/lY1Zy3MtqJkLwxDFx8BwiqfykTJDAM/NNVbl2lBpAtydvnNk6qM2xFSYOtX9BcsBTTXSsKmvYyvDrU2lDyMewhinRWYdXsPlXzs8IyrrNXRUdYCloT/N6uZgIQCATwjbmNsxrMglPeiYKEDO9LYUmt5hlFXInAotp8ojDX+Co1KmjEEcZK8pYLG6emTaUIEaSi+hhfN78pb0mGIYGhGh5u+JaIqpyAfC1EQec5qGuiipIgymbur62oIcY2dLW4qzBEhkgA6+Y1TUmJkqNQZ+kq+q0KJ/s2WuMlHSrmszGVWdEbTBSZVTmBxrcee3KEsaJcO6v+wqYYEXGGm/b0SaWIYELSuG1uU7YkXbPgy1RAxDSJAyRN71SMazV0unagFiXHNQ5IvpODQFJBUuDGxa1u7HtoIHPPzw/s7x9BBEW0vqulOSFsSRjgWA84BELX8kfowwARIGer6mEVhd3p/4eL64s2AUccK8nrZtR3tSYcqRDhyfd6nJz95I5eBHAUTK83b57TkClJrrkxns9Huirwt0YAwTBvq4Kjlk9MMNTEjs4bD1A0MiIIKCJdVEARGQw2LmklAM7Y8eH8z97vN5qSv/zg1OEzGYMhEWxY3JoymaPo82CJIxDAUN6enhavXzvt+8vaxgo2xyo+K4sY2pDNCxngKsrKVT6rp6ZWtNc5UjGEZ3b2ZrJWzGSlovPE9m5EsJXqbI6vmVk/VnQEBmUxaOAYEEcYLUmp1PcunrD7ljlfnV5/4A9ZZdmsopEqFpCI0bje9ueJnFzX9IElbQDAGA7mrBf3nuBxw5LEE8YrB06dHCkIxghg45K2uEBJVHVFRBAM8w4NF5yrLki9e8Pshy6bXB/jkqhnpARS6q5GZTaD2poZIkEQVrMjmZJc1VF35QVpWyqO+OLe42eHC6bBiMjkbCxTenpnL0OwpbpoYvLqaemxoicJlX0ZomBYcmgob89pMF++Zurba2ctnZh0FBEAR+wZLQKQtB0MsTdRiIW0j+6ZBPwp35S54ZVSdP/iNkRgiDnLeWZXH4sJpQgApCIeF5v2Hh/MWZwhADywtI1XfOzycllLDuXtqSnx+BVT9nx9zq2dzYpAKuIIHNGWdCpjMYbKcUipAHsDMC83AkgVlahnmzT/XHPavKMwwKyllrcn/3RGvaOIM/z3g6d6B7KmKRSgG+4Ygp8dKmza08cRbalWdaRXdaQyJckAAcBR4Ei6qC3+9Fc6dn/9wvuXTkgaXBIxBM68iGqoYJ/NOwZjSinlyJBOZ77sVrEIVFtTEAC4jHHfolbBEAAcqZ7Y0YMG9/kPQRGxmHh6Z1+25DBEANi4pNV1NByl5qTw5dVTdt06997FbY1xL03Iy/63i6aBrDVasLjr9EgHlNKNMQs4+BEHMKAoAlYYXPuyoDW+dk6jo0gw3HJo4MMTo7GYICDB0P0AgGnyE2eym/ef4AxtRV+d0XBJezJTckyOfaOl77zx0fWb9z/8bvfuvuFzOSsQ6gEAwOmsZZVsVj6TkhK0AYzGCTDCwZYfjRERQ7AseW9Xa1wwF1WPvdeLnHGGJVsVclYhZxfytq2ACNAUT+zoKzkSATjD+5a0OQ4hkc2N7gK+8dHAd988suLH7209ds51AdE1zgAA8IesBYqQlGf6lPLVEQHDkKvmSoPmL7jC4XI0Vs4NULDVzKbYbfOapSKD47vdg9u6hwxT5LLWnNa6DatmPX/L4l/csayztc62ZSIuPj059h8fnhYMHUVrZzcubIvnbMWBkqlkOh1DxDVLJt/UNVkqEgzdGMi9BnIWEIAqU56IpPSduVq4xtCxiPTomyMULfnNhS1pk7t6/dHtPcqWMY6Pr5n//n2X/fhr8+9aPvXGrslT6mNKEgIwgz26rUcqIoCYYN9a3GpbkgExYZTQaE2Kp6+f5zKvUnTVpr1bjpx1OXAwb2tRPxCUD1NWo2FPj4J/KRR9AyBAUdKUemPdwhZFZHD24amxtz8eaErH37rz4vsvn5mKCQAYzJWODxcKjgJEAmQGP9A3/JtPBgyGUtGtnS0zm2N5W3Eki5lPrlkwuT5uSSUY/vDdnh2fDW3ccuRcziKCoYLjZYoU+XG6J8phGahyCAwGOEDEEQtF5875La0Jw1aEAI/t6Cnl7Rdu6lo5vZkAeofyd/z84KLHt3c9sW3/6Uw8LvIFuykugOE/v9tNRIogbfL1Xa2Wo0YK9p1LJty8cFJJqphg+/pHf7C1O9WcPHouv/6Nw4iQt6XmlPnxsWueGPixNRHVzNboJqwkVWudsX5RmyIwGesbzr+yp/+qJVP+bP4kRXD0XPbyZ3du3tt/Om/nbAWAxZx94+L2Dzde/uia+Ts/Gfif7kGDoyRat7CtMcZnNMQe+8pUqYgjFm15168OOQQEUFcX++UHA5sPnm5NGn4JJByskKjm14Rz+wSVZCtwhpmic/fClilpsyRVjLNndh63cvbdyzrccX/960P9w6WGxkTJUQwhnyndvXL6c2sXIOKZjAWID2/ruWJWq1LQnBAbL2pb3p5qiImSo2KC/c3bRz/oH0ulYo4iBDATxrf/69j0xoSIcUXldKAX8Hi1NVHTl8ZoLINuyq0+xjYsmUAEBmNns6UX9vebTYkFk9KIcORMbmv3EMT4aME2OSsWnQeunPXotZ0A8LdvHX7od0cTTYl3Dp3ZfXz4kqlNjqJ/WNkBAI6imGC/OXL28R0nknUxhwAQCYBzlrXUgYGcp6mx4hyQW1dDAhb0d4K5knAlixiDXEneMLdpVlPckoohPL/nxOBIsSFppGIcAHpHipzw93+57NVbFgmpvr96tgv9g1sOPfTfnyWSBgJKSY9s66kEiq7e7B8t3vX6YdPgZYcGPdFnLC4igqoFbqJmUjVa8kGQiuIC7186kQAEw0zRfn7vCRYTmZIsWAoAWpMGcZzVUnfFzJZ5bXVd7fUA8N03Dz+69VgyHZdKEVAsab728cC+/pFlHY2OIoZQdNSdrx8ayFqphOGock0SMRCfIYTLO4QExMpJuFr1PP9GIGRL8rpZDV0TkrZUnOHPDpzs7R9tSBpK0kdnskSwqD09szn55Z/sPjFScKH/+3c+fXjrsWQ6JokIkSOTkhoTRsoUBKCIGOLmg6d/e3iwvs50mQcQERkAut/L0GMAIKr48378BTXSrp4mkgQGw+9cPAkAXI3xzO7jL9y2dP+9l/70xoWb9p1EBMHY82vm9Q0XVjy7Z+uxob9759Mf/vZoMhVz7RdDJCAp1cs3L/rShJQjleu3rZzakE6bliRERPSxPU4qVYvggjVcCmdeqBykYrboXD2jfvnklCUVZ7jl8JmPuocWdTTMaE7e1DXpXMH+1aEziHDZ9KZt31oxpT72xy/u+6et3Yk60w2lXFe0WHSev2Hh1Re22VIZnHGGUtH8Cak/n9dWLEnOGCACAmm490s6GKhXusdgAR+z4vwQoO6fAhERR3DRj4hE9MSOXgB4akevy6E/ua7znl8fPnBqDABWTm3cc++KT+7/oz0bLp0/oc62VVxwW1KxJJ+9YeG6ZR1FRxmc7Ts11j9adOtjD6y4IGa4XglWSjkVca5amnV5hwWKehRKsJdzhgDZonPltPSqqfW2VAbD3x8b3H5sMN6YfPXAqYOnxhDhoin1//K1zuteOvjs7hOKCAA6J6Qu7mhoqzOVorG83RwXr92+5K+WX1B0VFywnqH86uf2PLe3nyHaUnVNSl07t6VQkpyNzz0h3UKCQl0JkVSq504QPXhxe+XpI9u6iUAwyCm64xcfbL/n0lRMXPultrea4hvfOLJp38lLpzXObklKRXtPjpmC3dQ16QdXzZ7elCzYMmHwY4P5a/5t33BJ/vTAqQdXTkvHBQB8e0XH64fOKaqeNKhW1kdCwOQjezTLpZdDvXYMzjBnqUum1G27bb4iEAzf7x+55Kn3hCGIgHMsFOwrZrX85zeWNiVNd+r23uG3PxvsGy1yxIvaU6vntMxtSwGALcnguOv4yE2vHDwxVkonzUym9Nj1nRtXTrOkMjn7k80f/K57pC4uZKUehhDkqIAkACImH949fgaOM8wUnNdunLvmwmZbkcHwL1498Mr+k8k6081SccYKBbtzYuq5tQsun9E8/mpP7ej73jufFaRKmEIR2Q5Nb4r/74ZL4wZHgHeODl7z0kd1CaEC6QMM13i0e26svrt6Mr6c8Mhball76h+/fIGjCBE+Gcg8uOUwCq6nv82YOJ2xXnr/ZO9QflI6NjFlujmIypUtOW8eOfvN1z5+dtdxFNwUzAXRMPiZkeLE+tiSyWlLqplNia19Iz1DRZMzFWxeIgyV0csvEj/aFeY38muxSKQIG01Iy4IkYIBjJWcob3HOSO+MAmCIisAqOsxgCyemFrWnpzUmTMEyJad7qPD+qbHuc3lgmIwJRRpvIBCBwVl7Oo4MGWMjRTlctN28fAXTXl0fq3QLYOJHu6q1ugQuh8DOZMCxAZEhGrycg8HAGQBQMJSKSrYEqbwyNwIwBMETBnezqBEliQRgSQ8ewZlgGFzWZ/hgnwhioFeieiMMAICBaKSSMpd19ybS2BKBNERJAkBMxARq+HIDWqWreAwYJ4YsaWBlNardnYFVmj3CyfJQW5T3AhkHwyTbAmSIAdwjhfWEcsM4jHbhVVgZwR+CAKAq3Iu634waKKTtqvcLUa0KX6BBDoiYaSrHqeAPsdxuxqqgptwziBiRugoqUSuQeGo7qCLP3zMDIKoMiOR1y3aDoWmSbfv4DnJCoC3E2x1D3YYe1FgJkDQUBXZFX6FUlGkVGFHUbAWCSMEEAIUBUguxfUbX/mPtFiPUOlwwzNiI/rIVjsFgT0wEzFBMTEDlnk9tApZ7kggQwTDAthGZ1iEaPIC/YbUUPUIEmz7EUc1TVndUqy4hgtzuNvLoBiHcKoNMEHdLbogQkSsInjzU8FllkKffqWytIMyUVbiC/LpljY6tKhuTth8XJCWG27HGb0nEKJ18hJdZMdIHTKFQMkDFgBqN0oewelXJZSTGgFRVTQkRrVotfxxtJq4BB1aXrAp3itodpzSePDIG0hMMj0lR62qOsEpF6WsCgrVqcxgttWBNFmS1C3nnU8GMueqbEAOmxQfCx15V+0oYxi16HdzjVeUidgAx0Fjh++EUjXOCyEW/fcfFLtZmGwxlajDYblehCkUbfcN2OLi+qNbehVovsac+IdLhibrg1uwmxvN1nobMZYAc0S5i0jrA3S3+D8F0N71arKvoAAAAAElFTkSuQmCC';
+const Icon = ({ icon, size = 20, sw = 1.7 }) => <HugeiconsIcon icon={icon} size={size} strokeWidth={sw} />;
+
+/* ---- Bölümler: rayda bir ikon, panelde o bölümün sayfaları ---- */
+const SECTIONS = [
+  { id: 'genel', label: 'Genel', icon: I.Home01, pages: [
+    { value: 'home', label: 'Ana Sayfa', icon: I.Home01, desc: 'Bugün ilgilenmen gerekenler ve ayın özeti.' },
+    { value: 'daily', label: 'Günlük Kontrol', icon: I.CheckList, badge: 76, tone: 'accent', desc: 'Asistanın dünkü cevaplarını gözden geçir.' },
+    { value: 'stats', label: 'İstatistikler', icon: I.Analytics01, desc: 'Cevaplar, kanallar, satış ve asistan yetenekleri.' },
+  ]},
+  { id: 'konusma', label: 'Konuşmalar', icon: I.BubbleChat, alert: true, pages: [
+    { value: 'chats', label: 'Geçmiş Konuşmalar', icon: I.BubbleChat, desc: '1.277 konuşma, bugün 2 yeni.',
+      sub: [ { id: 'ig', label: 'Instagram', color: '#E1306C' }, { id: 'web', label: 'Web sitesi', color: '#119DDA' }, { id: 'tg', label: 'Telegram', color: '#2AABEE' }, { id: 'ty', label: 'Trendyol', color: '#F27A1A' } ] },
+    { value: 'findings', label: 'Bulgular', icon: I.Idea01, badge: 40, tone: 'crit', desc: 'Asistanının cevaplayamadığı sorular. Doğru cevabı yaz, asistan öğrensin.' },
+  ]},
+  { id: 'asistan', label: 'Asistanlar', icon: I.Bot, add: 'Yeni asistan', pages: [
+    { value: 'assistants', label: 'Asistanlarım', icon: I.Bot, desc: 'Yapay zeka asistanlarını yönet.',
+      sub: [ { id: 'a1', label: 'Ailways Asistanı', color: '#22C55E' }, { id: 'a2', label: 'Müşteri Destek', color: '#22C55E' }, { id: 'a3', label: 'Robo Çeyiz', color: '#22C55E' }, { id: 'a4', label: 'Robo Gold', color: '#22C55E' } ] },
+    { value: 'test', label: 'Test Et', icon: I.AiChat02, desc: 'Asistanını tam ekranda veya widget olarak dene. Bugün 4/50 mesaj kullanıldı.' },
+  ]},
+  { id: 'magaza', label: 'Mağaza', icon: I.Store01, add: 'Ürün ekle', pages: [
+    { value: 'products', label: 'Ürünler', icon: I.Package, desc: 'Katalogdaki 7.083 ürün ve eğitim durumları.' },
+    { value: 'orders', label: 'Siparişler', icon: I.ShoppingCart01, desc: 'Asistan üzerinden gelen siparişler.' },
+    { value: 'posts', label: 'Kayıtlı Gönderiler', icon: I.Image01, badge: 25, tone: 'accent', desc: 'Gönderilerine ürün bağla, asistan doğru ürünle cevap versin. 25 gönderi ürün bekliyor.' },
+    { value: 'channels', label: 'Kanallar', icon: I.PlugSocket, desc: '10 kanal bağlı, 17 kanal daha bağlanabilir.' },
+  ]},
+];
+const SETTINGS = { id: 'ayar', label: 'Ayarlar', icon: I.Settings02, pages: [
+  { value: 'profile', label: 'Profil ve Tercihler', icon: I.User, desc: 'Şirket bilgileri, sektör, günlük özet ve bildirimler.' },
+  { value: 'plan', label: 'Abonelik', icon: I.CreditCard, desc: 'Paketin ve kullanım limitlerin.' },
+  { value: 'billing', label: 'Faturalama', icon: I.Invoice01, desc: 'Faturalar ve ödeme yöntemi.' },
+  { value: 'tools', label: 'Akıllı Araçlar', icon: I.MagicWand01, desc: 'Asistanına ek yetenekler kazandıran araçlar.' },
+]};
+const ALL_SECTIONS = [...SECTIONS, SETTINGS];
+const findPage = v => { for (const s of ALL_SECTIONS) { const p = s.pages.find(p => p.value === v); if (p) return { s, p }; } };
+
+function PageRows({ section, active, sub, onPage, onSub, compact }) {
+  const [open, setOpen] = useState(() => new Set(section.pages.filter(p => p.sub && p.value === active).map(p => p.value)));
+  return section.pages.map(p => {
+    const isOpen = open.has(p.value);
+    return (
+      <React.Fragment key={p.value}>
+        <button type="button" className="nav-row" aria-current={p.value === active ? 'page' : undefined}
+          onClick={() => { onPage(p.value); if (p.sub && !compact) setOpen(o => { const n = new Set(o); n.has(p.value) && p.value === active ? n.delete(p.value) : n.add(p.value); return n; }); }}>
+          <span className="ic"><Icon icon={p.icon} size={20} /></span>
+          <span className="lbl">{p.label}</span>
+          {p.badge ? <span className={`pill ${p.tone === 'crit' ? 'pill-crit' : 'pill-accent'}`}>{p.badge}</span> : null}
+          {p.sub && !compact ? <span className="chev" data-open={isOpen ? '' : undefined}><Icon icon={I.ArrowDown01} size={16} /></span> : null}
+        </button>
+        {p.sub && !compact && (
+          <div className="sub" data-open={isOpen ? '' : undefined}>
+            <div>
+              {p.sub.map(s => (
+                <button key={s.id} type="button" className="sub-row" tabIndex={isOpen ? 0 : -1}
+                  aria-current={p.value === active && sub === s.id ? 'true' : undefined}
+                  onClick={() => { onPage(p.value); onSub(s.id); }}>
+                  <span className="dot" style={{ background: s.color }} />{s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </React.Fragment>
+    );
+  });
+}
+
+function App() {
+  const readPanel = () => { try { return localStorage.getItem('ailways-b-panel') !== '0'; } catch { return true; } };
+  const [panelOpen, setPanelOpen] = useState(readPanel);
+  const [active, setActive] = useState('findings');
+  const [sub, setSub] = useState(null);
+  const [sectionId, setSectionId] = useState('konusma');
+  const [fly, setFly] = useState(null);   // { section, top }
+  const [tip, setTip] = useState(null);
+  const flyRef = useRef(null);
+
+  const { s: pageSection, p: page } = findPage(active);
+  const section = ALL_SECTIONS.find(s => s.id === sectionId);
+
+  useEffect(() => { try { localStorage.setItem('ailways-b-panel', panelOpen ? '1' : '0'); } catch {} }, [panelOpen]);
+
+  const narrow = () => window.matchMedia('(max-width: 900px)').matches;
+  const togglePanel = useCallback(() => { setFly(null); setTip(null); setPanelOpen(o => !o); }, []);
+
+  useEffect(() => {
+    const onKey = e => {
+      if (e.key === 'Escape') setFly(null);
+      if (e.key !== '[' || e.metaKey || e.ctrlKey || e.altKey) return;
+      const t = e.target; if (t && (t.isContentEditable || /INPUT|TEXTAREA|SELECT/.test(t.tagName))) return;
+      e.preventDefault(); togglePanel();
+    };
+    const onDown = e => { if (flyRef.current && !flyRef.current.contains(e.target) && !e.target.closest('.rail')) setFly(null); };
+    window.addEventListener('keydown', onKey); document.addEventListener('mousedown', onDown);
+    return () => { window.removeEventListener('keydown', onKey); document.removeEventListener('mousedown', onDown); };
+  }, [togglePanel]);
+
+  const onRail = (s, e) => {
+    setTip(null);
+    setSectionId(s.id);
+    if (!panelOpen || narrow()) {
+      const r = e.currentTarget.getBoundingClientRect();
+      setFly(f => f && f.id === s.id ? null : { id: s.id, top: Math.min(r.top - 8, window.innerHeight - (s.pages.length * 42 + 60)), left: r.right + 18 });
+    }
+  };
+  const goPage = v => { setActive(v); setSub(null); const fp = findPage(v); setSectionId(fp.s.id); setFly(null); };
+  const showTip = (e, label) => {
+    if (panelOpen && !narrow()) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    setTip({ label, top: r.top + r.height / 2, left: r.right + 18 });
+  };
+  const flySection = fly && ALL_SECTIONS.find(s => s.id === fly.id);
+  const railBtn = s => (
+    <button key={s.id} type="button" className="rail-btn" aria-label={s.label}
+      aria-current={sectionId === s.id ? 'true' : undefined} aria-expanded={fly?.id === s.id || undefined}
+      onClick={e => onRail(s, e)} onMouseEnter={e => !fly && showTip(e, s.label)} onMouseLeave={() => setTip(null)}>
+      <Icon icon={s.icon} size={22} />
+      {s.alert && <span className="rail-badge" aria-hidden="true" />}
+    </button>
+  );
+  const subLabel = sub && page.sub?.find(x => x.id === sub)?.label;
+
+  return (
+    <div className="app">
+      <div className="rail-wrap">
+        <nav className="rail" aria-label="Bölümler">
+          <img className="rail-logo" src={LOGO} alt="Ailways" />
+          {SECTIONS.map(railBtn)}
+          <div className="rail-sep" aria-hidden="true" />
+          {railBtn(SETTINGS)}
+          <div className="rail-spacer" />
+          <button type="button" className="rail-btn" aria-label={panelOpen ? 'Paneli kapat' : 'Paneli aç'} aria-expanded={panelOpen}
+            onClick={togglePanel} onMouseEnter={e => showTip(e, 'Paneli aç  [')} onMouseLeave={() => setTip(null)}>
+            <Icon icon={I.SidebarLeft} size={20} />
+          </button>
+          <button type="button" className="rail-avatar" aria-label="Hesap: Ailways" title="yusufailways@tuz.com">A</button>
+        </nav>
+      </div>
+
+      <aside className="panel" data-closed={panelOpen ? undefined : ''} aria-hidden={!panelOpen} inert={panelOpen ? undefined : ''}>
+        <div className="panel-inner">
+          <div className="panel-head">
+            <h2>{section.label}</h2>
+            {section.add && <button type="button" className="round-add" aria-label={section.add} title={section.add}><Icon icon={I.Add01} size={20} sw={2} /></button>}
+            <button type="button" className="icon-btn" onClick={togglePanel} aria-label="Paneli kapat" title="Paneli kapat  [">
+              <Icon icon={I.SidebarLeft} size={18} />
+            </button>
+          </div>
+          <div className="nav-list">
+            <PageRows key={section.id} section={section} active={active} sub={sub} onPage={goPage} onSub={setSub} />
+          </div>
+          <button type="button" className="setup">
+            <span className="setup-ic"><Icon icon={I.Rocket01} size={20} /></span>
+            <span style={{ flex: 1, minWidth: 0 }}>
+              <b>Kurulumu tamamla</b>
+              <span className="num">0/5 adım tamamlandı</span>
+              <div className="progress" aria-hidden="true"><i style={{ width: '0%' }} /></div>
+            </span>
+          </button>
+        </div>
+      </aside>
+
+      <main className="main">
+        <header className="topbar">
+          <h1>{page.label}{subLabel ? <span style={{ color: 'var(--muted)', fontWeight: 500 }}> · {subLabel}</span> : null}</h1>
+          <span className="info" title={page.desc}><Icon icon={I.HelpCircle} size={18} /></span>
+          <span style={{ flex: 1 }} />
+          <label className="search">
+            <Icon icon={I.Search01} size={18} />
+            <input id="search" type="search" placeholder="Ara" aria-label="Panelde ara" />
+          </label>
+          <span className="vr" aria-hidden="true" />
+          <div className="assist">
+            <div><b className="num">4</b><small>aktif asistan</small></div>
+            <div className="stack" aria-hidden="true">
+              <span style={{ background: '#119DDA' }}>AA</span>
+              <span style={{ background: '#0E7490' }}>MD</span>
+              <span style={{ background: '#DB2777' }}>RÇ</span>
+              <span style={{ background: '#CA8A04' }}>RG</span>
+            </div>
+          </div>
+        </header>
+        <div className="content">
+          <p className="lead">{page.desc}</p>
+          <div className="placeholder">
+            <div>
+              <span style={{ display: 'inline-grid', placeItems: 'center', width: 52, height: 52, borderRadius: 16, background: 'var(--accent-soft)', color: 'var(--accent)' }}>
+                <Icon icon={page.icon} size={26} />
+              </span>
+              <h3>Bu ekranın tasarımı sırada</h3>
+              <p>Bu prototip sadece menüyü gösteriyor. Raydan bölüm seç, paneli raydaki düğmeyle ya da <kbd>[</kbd> tuşuyla kapat. Panel kapalıyken ray ikonuna tıklayınca sayfalar açılır listede görünür.</p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <button type="button" className="support"><Icon icon={I.HelpCircle} size={20} />Destek</button>
+
+      {flySection && (
+        <div ref={flyRef} className="fly" style={{ top: Math.max(12, fly.top), left: fly.left }} role="dialog" aria-label={flySection.label}>
+          <div className="fly-title">{flySection.label}</div>
+          <PageRows section={flySection} active={active} sub={sub} onPage={goPage} onSub={setSub} compact />
+        </div>
+      )}
+      {tip && !fly && <div className="tip" style={{ top: tip.top, left: tip.left }} role="tooltip">{tip.label}</div>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>

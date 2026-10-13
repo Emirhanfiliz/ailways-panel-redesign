@@ -1,0 +1,419 @@
+<title>Ailways React Bits Testi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap&subset=latin-ext" rel="stylesheet">
+<style>
+  /* Teknik test sayfası: tek kolon, üstte durum paneli, altta bileşen başına bir blok */
+  :root {
+    --bg: #F4F8FB;
+    --surface: #FFFFFF;
+    --surface-2: #EEF4F9;
+    --line: #DCE6EE;
+    --fg: #0E1E2B;
+    --muted: #5B6E7D;
+    --accent: #0A87C5;
+    --accent-2: #119DDA;
+    --accent-soft: #E3F3FB;
+    --ok: #12805C;
+    --ok-soft: #E2F5EE;
+    --bad: #C2362F;
+    --bad-soft: #FBE7E5;
+    --warn: #A15C00;
+    --warn-soft: #FFF2DC;
+    --font-sans: "Geist", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0B141B; --surface: #111D26; --surface-2: #172633; --line: #22343F;
+      --fg: #E6EEF3; --muted: #8DA1AF; --accent: #2DB0EA; --accent-2: #4CC0F0; --accent-soft: #0E2E40;
+      --ok: #3FCB97; --ok-soft: #0F2F25; --bad: #F07A72; --bad-soft: #3A1715; --warn: #F2B356; --warn-soft: #3A2810;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0B141B; --surface: #111D26; --surface-2: #172633; --line: #22343F;
+    --fg: #E6EEF3; --muted: #8DA1AF; --accent: #2DB0EA; --accent-2: #4CC0F0; --accent-soft: #0E2E40;
+    --ok: #3FCB97; --ok-soft: #0F2F25; --bad: #F07A72; --bad-soft: #3A1715; --warn: #F2B356; --warn-soft: #3A2810;
+    color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-sans); font-size: 15px; line-height: 1.5; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding-inline: 16px; padding-block: 32px 64px; }
+  h1, h2 { text-wrap: balance; margin: 0; }
+  .num { font-variant-numeric: tabular-nums; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; } }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3"></script>
+<style type="text/tailwindcss">
+  @theme inline {
+    --color-bg: var(--bg);
+    --color-surface: var(--surface);
+    --color-surface-2: var(--surface-2);
+    --color-line: var(--line);
+    --color-fg: var(--fg);
+    --color-muted: var(--muted);
+    --color-accent: var(--accent);
+    --color-accent-2: var(--accent-2);
+    --color-accent-soft: var(--accent-soft);
+    --color-ok: var(--ok);
+    --color-ok-soft: var(--ok-soft);
+    --color-bad: var(--bad);
+    --color-bad-soft: var(--bad-soft);
+    --color-warn: var(--warn);
+    --color-warn-soft: var(--warn-soft);
+    --font-sans: var(--font-sans);
+    --font-mono: var(--font-mono);
+  }
+</style>
+
+<div class="wrap">
+  <header class="flex items-center gap-4 mb-8">
+    <img src="data:image/png;base64,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" alt="Ailways" width="44" height="44" style="border-radius:11px">
+    <div class="min-w-0">
+      <h1 class="text-2xl font-semibold tracking-tight">React Bits teknik testi</h1>
+      <p class="text-muted m-0">React Bits bileşenleri, Recharts ve Tailwind'in artifact içinde derleme olmadan çalışıp çalışmadığını kontrol eden sayfa. Tasarım değil.</p>
+    </div>
+  </header>
+
+  <!-- Durum paneli: React'tan bağımsız, düz JS ile doldurulur -->
+  <section class="bg-surface border border-line rounded-2xl p-5 mb-6" aria-labelledby="durum-baslik">
+    <div class="flex items-baseline justify-between gap-3 flex-wrap mb-3">
+      <h2 id="durum-baslik" class="text-base font-semibold">Yükleme durumu</h2>
+      <span id="ozet" class="text-sm font-medium px-2.5 py-0.5 rounded-full bg-surface-2 text-muted">Kontrol ediliyor…</span>
+    </div>
+    <ul id="durum" class="grid gap-2 m-0 p-0 list-none" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))"></ul>
+    <pre id="hata" hidden class="mt-3 mb-0 p-3 rounded-lg bg-bad-soft text-bad text-xs font-mono whitespace-pre-wrap overflow-x-auto"></pre>
+  </section>
+
+  <div id="root"></div>
+</div>
+
+<script>
+  // Babel'den önce çalışır; React tarafı hiç ayağa kalkmasa bile hatayı gösterir.
+  window.__errors = [];
+  window.addEventListener('error', function (e) {
+    window.__errors.push((e.message || 'Bilinmeyen hata') + (e.filename ? '\n' + e.filename + ':' + e.lineno : ''));
+    var el = document.getElementById('hata');
+    if (el) { el.hidden = false; el.textContent = window.__errors.join('\n\n'); }
+  });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/react-is@18.3.1/umd/react-is.production.min.js"></script>
+<script src="https://unpkg.com/recharts@3.10.1/umd/Recharts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/framer-motion@12.43.0/dist/framer-motion.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js"></script>
+
+<script>
+  (function () {
+    var checks = [
+      ['React 18.3.1', function () { return window.React && React.version; }],
+      ['ReactDOM', function () { return window.ReactDOM && ReactDOM.version; }],
+      ['react-is', function () { return !!window.ReactIs; }],
+      ['Recharts 3.10.1', function () { return window.Recharts && !!Recharts.AreaChart; }],
+      ['framer-motion 12.43 (Motion)', function () { return window.Motion && !!Motion.motion && !!Motion.useSpring; }],
+      ['Babel standalone', function () { return window.Babel && Babel.version; }],
+      ['Tailwind v4 browser', function () {
+        var t = document.createElement('div'); t.className = 'hidden'; document.body.appendChild(t);
+        var ok = getComputedStyle(t).display === 'none'; t.remove(); return ok;
+      }],
+      ['Geist fontu', function () { return document.fonts && document.fonts.check('16px Geist'); }]
+    ];
+    window.__renderStatus = function (extra) {
+      var list = document.getElementById('durum');
+      var all = checks.concat(extra || []);
+      var fails = 0;
+      list.innerHTML = '';
+      all.forEach(function (c) {
+        var v; try { v = c[1](); } catch (e) { v = false; }
+        if (!v) fails++;
+        var li = document.createElement('li');
+        li.className = 'flex items-center gap-2 px-3 py-2 rounded-lg text-sm ' + (v ? 'bg-ok-soft text-ok' : 'bg-bad-soft text-bad');
+        li.innerHTML = '<span aria-hidden="true" class="font-mono">' + (v ? '✓' : '✗') + '</span><span class="text-fg">' + c[0] + '</span>' +
+          (typeof v === 'string' ? '<span class="ml-auto font-mono text-xs opacity-80">' + v + '</span>' : '');
+        list.appendChild(li);
+      });
+      var oz = document.getElementById('ozet');
+      oz.textContent = fails ? fails + ' sorun var' : 'Hepsi çalışıyor';
+      oz.className = 'text-sm font-medium px-2.5 py-0.5 rounded-full ' + (fails ? 'bg-bad-soft text-bad' : 'bg-ok-soft text-ok');
+    };
+    window.__renderStatus([['React Bits bileşenleri render edildi', function () { return false; }]]);
+    if (document.fonts) document.fonts.ready.then(function () { window.__renderStatus(window.__extra); });
+  })();
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---- import satırlarının yerine geçen global'ler ----
+const { useCallback, useEffect, useRef, useState } = React;
+const { motion, useInView, useMotionValue, useSpring } = Motion;
+const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* =========================================================================
+   React Bits · CountUp (src/tailwind/TextAnimations/CountUp)
+   Değişiklik: yalnızca import satırları. Kod birebir.
+   ========================================================================= */
+function CountUp({ to, from = 0, direction = 'up', delay = 0, duration = 2, className = '', startWhen = true, separator = '', onStart, onEnd }) {
+  const ref = useRef(null);
+  const motionValue = useMotionValue(direction === 'down' ? to : from);
+  const damping = 20 + 40 * (1 / duration);
+  const stiffness = 100 * (1 / duration);
+  const springValue = useSpring(motionValue, { damping, stiffness });
+  const isInView = useInView(ref, { once: true, margin: '0px' });
+  const getDecimalPlaces = num => {
+    const str = num.toString();
+    if (str.includes('.')) { const decimals = str.split('.')[1]; if (parseInt(decimals) !== 0) return decimals.length; }
+    return 0;
+  };
+  const maxDecimals = Math.max(getDecimalPlaces(from), getDecimalPlaces(to));
+  const formatValue = useCallback(latest => {
+    const hasDecimals = maxDecimals > 0;
+    const options = { useGrouping: !!separator, minimumFractionDigits: hasDecimals ? maxDecimals : 0, maximumFractionDigits: hasDecimals ? maxDecimals : 0 };
+    const formattedNumber = Intl.NumberFormat('en-US', options).format(latest);
+    return separator ? formattedNumber.replace(/,/g, separator) : formattedNumber;
+  }, [maxDecimals, separator]);
+  useEffect(() => { if (ref.current) ref.current.textContent = formatValue(direction === 'down' ? to : from); }, [from, to, direction, formatValue]);
+  useEffect(() => {
+    if (isInView && startWhen) {
+      if (typeof onStart === 'function') onStart();
+      const timeoutId = setTimeout(() => { motionValue.set(direction === 'down' ? from : to); }, delay * 1000);
+      const durationTimeoutId = setTimeout(() => { if (typeof onEnd === 'function') onEnd(); }, delay * 1000 + duration * 1000);
+      return () => { clearTimeout(timeoutId); clearTimeout(durationTimeoutId); };
+    }
+  }, [isInView, startWhen, motionValue, direction, from, to, delay, onStart, onEnd, duration]);
+  useEffect(() => {
+    const unsubscribe = springValue.on('change', latest => { if (ref.current) ref.current.textContent = formatValue(latest); });
+    return () => unsubscribe();
+  }, [springValue, formatValue]);
+  return <span className={className} ref={ref} />;
+}
+
+/* =========================================================================
+   React Bits · SpotlightCard (src/tailwind/Components/SpotlightCard)
+   Değişiklik: sabit koyu renkler (border-neutral-800 bg-neutral-900, rounded-3xl p-8)
+   panel token'larıyla değiştirildi. Davranış birebir.
+   ========================================================================= */
+const SpotlightCard = ({ children, className = '', spotlightColor = 'rgba(255, 255, 255, 0.25)' }) => {
+  const divRef = useRef(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [opacity, setOpacity] = useState(0);
+  const handleMouseMove = e => {
+    if (!divRef.current || isFocused) return;
+    const rect = divRef.current.getBoundingClientRect();
+    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+  return (
+    <div ref={divRef} onMouseMove={handleMouseMove}
+      onFocus={() => { setIsFocused(true); setOpacity(0.6); }} onBlur={() => { setIsFocused(false); setOpacity(0); }}
+      onMouseEnter={() => setOpacity(0.6)} onMouseLeave={() => setOpacity(0)}
+      className={`relative rounded-2xl border border-line bg-surface overflow-hidden p-5 ${className}`}>
+      <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 ease-in-out"
+        style={{ opacity, background: `radial-gradient(circle at ${position.x}px ${position.y}px, ${spotlightColor}, transparent 80%)` }} />
+      {children}
+    </div>
+  );
+};
+
+/* =========================================================================
+   React Bits · AnimatedList (src/tailwind/Components/AnimatedList)
+   Değişiklikler: w-[500px] → w-full; koyu sabit renkler (#111, #222, #120F17) → token;
+   item içeriği string yerine render fonksiyonu. enableArrowNavigation=false ile kullanılıyor,
+   çünkü açıkken window üzerinde Tab tuşunu yakalıyor ve sayfanın klavye gezintisini bozuyor.
+   ========================================================================= */
+const AnimatedItem = ({ children, delay = 0, index, onMouseEnter, onClick }) => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { amount: 0.5, triggerOnce: false });
+  return (
+    <motion.div ref={ref} data-index={index} onMouseEnter={onMouseEnter} onClick={onClick}
+      initial={{ scale: 0.7, opacity: 0 }}
+      animate={inView ? { scale: 1, opacity: 1 } : { scale: 0.7, opacity: 0 }}
+      transition={{ duration: reduceMotion ? 0 : 0.2, delay: reduceMotion ? 0 : delay }}
+      className="mb-2 cursor-pointer">
+      {children}
+    </motion.div>
+  );
+};
+
+const AnimatedList = ({ items = [], renderItem, onItemSelect, showGradients = true, className = '', initialSelectedIndex = -1 }) => {
+  const listRef = useRef(null);
+  const [selectedIndex, setSelectedIndex] = useState(initialSelectedIndex);
+  const [topGradientOpacity, setTopGradientOpacity] = useState(0);
+  const [bottomGradientOpacity, setBottomGradientOpacity] = useState(1);
+  const handleScroll = useCallback(e => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    setTopGradientOpacity(Math.min(scrollTop / 50, 1));
+    const bottomDistance = scrollHeight - (scrollTop + clientHeight);
+    setBottomGradientOpacity(scrollHeight <= clientHeight ? 0 : Math.min(bottomDistance / 50, 1));
+  }, []);
+  return (
+    <div className={`relative w-full ${className}`}>
+      <div ref={listRef} className="max-h-[340px] overflow-y-auto p-3" onScroll={handleScroll} style={{ scrollbarWidth: 'thin' }}>
+        {items.map((item, index) => (
+          <AnimatedItem key={index} delay={0.1} index={index}
+            onMouseEnter={() => setSelectedIndex(index)}
+            onClick={() => { setSelectedIndex(index); onItemSelect && onItemSelect(item, index); }}>
+            <div className={`p-3 rounded-xl border transition-colors ${selectedIndex === index ? 'bg-accent-soft border-accent/30' : 'bg-surface border-line'}`}>
+              {renderItem ? renderItem(item, selectedIndex === index) : <p className="m-0">{item}</p>}
+            </div>
+          </AnimatedItem>
+        ))}
+      </div>
+      {showGradients && (<>
+        <div className="absolute top-0 left-0 right-0 h-[40px] bg-gradient-to-b from-surface-2 to-transparent pointer-events-none transition-opacity duration-300" style={{ opacity: topGradientOpacity }} />
+        <div className="absolute bottom-0 left-0 right-0 h-[70px] bg-gradient-to-t from-surface-2 to-transparent pointer-events-none transition-opacity duration-300" style={{ opacity: bottomGradientOpacity }} />
+      </>)}
+    </div>
+  );
+};
+
+// ---- Tema token'larını JS'ten okumak (Recharts SVG attribute'ları var() kabul etmiyor) ----
+function useTokens(names) {
+  const read = () => { const cs = getComputedStyle(document.documentElement); return Object.fromEntries(names.map(n => [n, cs.getPropertyValue('--' + n).trim()])); };
+  const [t, setT] = useState(read);
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const upd = () => setT(read());
+    mq.addEventListener('change', upd);
+    const mo = new MutationObserver(upd);
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => { mq.removeEventListener('change', upd); mo.disconnect(); };
+  }, []);
+  return t;
+}
+
+// ---- Örnek veri (gerçek değil; panelin ekranlarındaki değerlerden esinlenildi) ----
+const kpis = [
+  { label: 'Yazılı cevap', to: 215, hint: 'Asistanın müşterilere gönderdiği cevaplar' },
+  { label: 'Görsel okuma', to: 131, hint: 'Eşleme veya yazı okuma turu' },
+  { label: 'Ürün', to: 7083, sep: '.', hint: 'Kataloğa aktarılmış ürün' },
+];
+const assistants = [
+  { name: 'Ailways Asistanı', type: 'E-Ticaret', ch: ['Web', 'Telegram'], kb: 0 },
+  { name: 'Müşteri Destek Asistanı', type: 'Pazaryeri', ch: ['eBay', 'Trendyol'], kb: 0 },
+  { name: 'Robo Çeyiz', type: 'E-Ticaret', ch: ['Web'], kb: 30 },
+  { name: 'Robo Gold', type: 'E-Ticaret', ch: ['Web'], kb: 29 },
+];
+const findings = [
+  { q: '14KLY99999 fiyatı', d: '25 Eyl' },
+  { q: 'Görsel gönderildi', d: '24 Eyl' },
+  { q: 'Görsel gönderildi', d: '24 Eyl' },
+  { q: 'Bu görsele benzer ürünler arıyorum', d: '23 Eyl' },
+  { q: 'Kargo ne zaman çıkar?', d: '23 Eyl' },
+  { q: 'Bu kolye 22 ayar mı?', d: '22 Eyl' },
+  { q: 'Hafta sonu mağaza açık mı?', d: '22 Eyl' },
+  { q: 'Taksit seçenekleri neler?', d: '21 Eyl' },
+];
+const daily = [12,18,9,22,31,27,8,6,24,29,35,33,40,14,11,38,42,36,45,49,21,17,44,51,47,55,58,26,19,53].map((v, i) => ({ g: i + 1, cevap: v }));
+
+function Block({ n, title, source, children, note }) {
+  return (
+    <section className="bg-surface-2 border border-line rounded-2xl p-5 mb-6">
+      <div className="flex items-baseline gap-3 flex-wrap mb-1">
+        <h2 className="text-base font-semibold">{title}</h2>
+        <code className="text-xs font-mono text-muted">{source}</code>
+      </div>
+      {note && <p className="text-sm text-muted mt-0 mb-4">{note}</p>}
+      {children}
+    </section>
+  );
+}
+
+function App() {
+  const tk = useTokens(['accent', 'accent-2', 'line', 'muted', 'surface', 'fg']);
+  const [picked, setPicked] = useState(null);
+  useEffect(() => {
+    window.__extra = [['React Bits bileşenleri render edildi', () => true]];
+    window.__renderStatus(window.__extra);
+  }, []);
+
+  return (
+    <>
+      <Block title="CountUp" source="motion/react → Motion global" note="Kod birebir, sadece import satırları değişti. Sayılar sayfa açılınca 0'dan sayarak yükselmeli.">
+        <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))' }}>
+          {kpis.map(k => (
+            <div key={k.label} className="bg-surface border border-line rounded-xl p-4">
+              <CountUp to={k.to} separator={k.sep || ''} duration={reduceMotion ? 0.01 : 1.6} className="num text-3xl font-semibold tracking-tight" />
+              <div className="font-medium mt-1">{k.label}</div>
+              <div className="text-sm text-muted">{k.hint}</div>
+            </div>
+          ))}
+        </div>
+      </Block>
+
+      <Block title="SpotlightCard" source="bağımlılık yok" note="Sabit koyu renkleri panelin renk token'larıyla değiştirdim. Fareyi kartların üstünde gezdirince mavi bir ışık imleci takip etmeli.">
+        <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(230px,1fr))' }}>
+          {assistants.map(a => (
+            <SpotlightCard key={a.name} spotlightColor="rgba(17,157,218,0.18)">
+              <div className="relative flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="font-semibold">{a.name}</div>
+                  <div className="text-sm text-muted">{a.type} asistanı</div>
+                </div>
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-ok-soft text-ok shrink-0">Aktif</span>
+              </div>
+              <div className="relative flex flex-wrap gap-1.5 mt-4">
+                {a.ch.map(c => <span key={c} className="text-xs px-2 py-1 rounded-md bg-accent-soft text-accent font-medium">{c}</span>)}
+              </div>
+              <div className="relative text-xs text-muted mt-3 num">Bilgi bankası: {a.kb} kayıt</div>
+            </SpotlightCard>
+          ))}
+        </div>
+      </Block>
+
+      <Block title="AnimatedList" source="motion/react → Motion global" note="Kaydırınca öğeler büyüyerek belirmeli, üstüne gelince vurgulanmalı. Klavye kısayolunu kapattım, çünkü açıkken sayfadaki Tab gezintisini bozuyor.">
+        <div className="grid gap-4 md:grid-cols-[1fr_260px]">
+          <div className="bg-surface-2 rounded-xl min-w-0">
+            <AnimatedList items={findings} onItemSelect={(it) => setPicked(it)}
+              renderItem={(f) => (
+                <div className="flex items-center gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium truncate">{f.q}</div>
+                    <div className="text-xs text-muted">Anonim · Web</div>
+                  </div>
+                  <span className="text-xs text-muted shrink-0">{f.d}</span>
+                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-warn-soft text-warn shrink-0">Bekleyen</span>
+                </div>
+              )} />
+          </div>
+          <div className="bg-surface border border-line rounded-xl p-4 text-sm">
+            <div className="text-xs uppercase tracking-wider text-muted mb-1">Seçilen bulgu</div>
+            {picked ? <div className="font-medium">{picked.q}</div> : <div className="text-muted">Listeden bir bulguya tıkla.</div>}
+          </div>
+        </div>
+      </Block>
+
+      <Block title="Recharts AreaChart" source="Recharts UMD + react-is" note="Örnek veri, gerçek rakam değil. Grafik açık ve koyu temada renk değiştirmeli, fareyle üstüne gelince değer kutusu görünmeli.">
+        <div className="bg-surface border border-line rounded-xl p-4">
+          <div className="flex items-baseline justify-between mb-2">
+            <div className="font-medium">Günlük cevap · Eylül 2026</div>
+            <div className="text-sm text-muted num">Toplam <CountUp to={daily.reduce((s, d) => s + d.cevap, 0)} separator="." duration={reduceMotion ? 0.01 : 1.6} /></div>
+          </div>
+          <div style={{ width: '100%', height: 240 }}>
+            <ResponsiveContainer>
+              <AreaChart data={daily} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="fillA" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={tk['accent-2']} stopOpacity={0.35} />
+                    <stop offset="100%" stopColor={tk['accent-2']} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid stroke={tk.line} strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="g" tick={{ fill: tk.muted, fontSize: 12 }} axisLine={false} tickLine={false} ticks={[1, 8, 15, 22, 29]} />
+                <YAxis tick={{ fill: tk.muted, fontSize: 12 }} axisLine={false} tickLine={false} width={40} />
+                <Tooltip contentStyle={{ background: tk.surface, border: `1px solid ${tk.line}`, borderRadius: 10, color: tk.fg }}
+                  labelFormatter={(g) => `${g} Eylül`} formatter={(v) => [v, 'Cevap']} />
+                <Area type="monotone" dataKey="cevap" stroke={tk.accent} strokeWidth={2} fill="url(#fillA)" isAnimationActive={!reduceMotion} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </Block>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
